@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>hdu 4063 Aircraft 计算几何&最短路</title>
+	<meta name="description" content="#题意:有一种东西需要借助无线电信号才能运动，给出n个无线电发射器的坐标以及他的作用范围。现在要求求出从第1个无线电发射器到第n个无线电发射器的最短距离。误区：认为是一个比较简单的最短路，想当然的认为最短路通过发射点,最短路还可以经过两圆的交点,还有更特殊的一个就是（一点完全可以不经过任何交点到达另外一个点），即...">
+	
+	<link rel="canonical" href="/2012/09/02/hdu%204063%20Aircraft%20%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95&%E6%9C%80%E7%9F%AD%E8%B7%AF/">
+	<link rel="alternate" type="application/rss+xml" title="ShinichR" href="/feed.xml" />
+	
+	<!-- <link rel="stylesheet" href="/css/main.css"> -->
+
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/fontawesome/4.2.0/css/font-awesome.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"> -->
+	
+
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	
+	<!-- <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="/static/js/index.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/railscasts.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai.min.css"> -->
+	<!-- <script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/languages/dos.min.js"></script> -->
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?b636473d6ffa17615f94e5db1459ea81";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+</head>
+
+ <!--  <body data-spy="scroll" data-target="#myAffix"> -->
+  <body>
+
+    <header>
+
+<!-- navbar -->
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">ShinichR</a>
+      <p class="navbar-text"></p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+
+        
+          <li>
+        
+          <a href="/"><span class="glyphicon glyphicon-th-large"></span> Blog</a></li>
+
+        
+          
+            
+              <li>
+            
+            <a href="/about/"><span class="glyphicon glyphicon-heart"></span> About</a></li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+
+    <div id="main" class="container main">
+      <div class="row">
+  <div id="myArticle" class="col-sm-9">
+    <div class="post-area post">
+      <header>
+        <h1>hdu 4063 Aircraft 计算几何&最短路</h1>
+        <p>Sep 2, 2012</p>
+      </header>
+      <hr>
+      <article>
+        <h4 id="section">#</h4>
+<p>题意:</p>
+
+<p>有一种东西需要借助无线电信号才能运动，给出n个无线电发射器的坐标以及他的作用范围。现在要求求出<strong>从第1个无线电发射器到第n个无线电发射器的最短距离</strong>。</p>
+
+<p>误区：<strong>认为是一个比较简单的最短路，想当然的认为最短路通过发射点,最短路还可以经过两圆的交点</strong>,还有更特殊的一个就是（一点完全可以不经过任何交点到达另外一个点），即判断一条线段是否在覆盖区里,其中这个判断线段是否完全被圆形覆盖有点麻烦没，可以求出线段与圆所有交点，然后对这些交点排序，然后判断相邻俩点之间的线段是否被一个圆覆盖，这个的话可以判断这俩交点之间的中点是否被一个圆覆盖。</p>
+
+<pre><code>#include &lt;set&gt;
+#include &lt;queue&gt;
+#include &lt;stack&gt;
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;iostream&gt;
+#include &lt;limits.h&gt;
+#include &lt;string.h&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+#define MID(x,y) ( ( x + y ) &gt;&gt; 1 )
+#define L(x) ( x &lt;&lt; 1 )
+#define R(x) ( x &lt;&lt; 1 | 1 )
+#define FOR(i,s,t) for(int i=(s); i&lt;(t); i++)
+using namespace std;
+const int maxn = 1005;
+const double eps = 1e-6;
+const double inf = 1e50;
+
+struct point{
+	double x, y;
+	void get(){
+		scanf("%lf%lf", &amp;x, &amp;y);
+	}
+};
+bool dy(double x,double y){return x &gt; y + eps;} // x &gt; y
+bool xy(double x,double y){return x &lt; y - eps;} // x &lt; y
+bool dyd(double x,double y) {return x &gt; y - eps;} // x &gt;= y	
+bool xyd(double x,double y) {return x &lt; y + eps;}// x &lt;= y
+bool dd(double x,double y){return fabs( x - y ) &lt; eps;}// x == y
+double disp2p(point a,point b) //a b 两点之间的距离
+{
+	return sqrt( ( a.x - b.x ) * ( a.x - b.x ) + ( a.y - b.y ) * ( a.y - b.y ) );
+}
+bool operator==(point a, point b){//重载判两点是否为一个点
+	return dd(a.x, b.x) &amp;&amp; dd(a.y, b.y);
+}
+typedef struct NODE{
+	int u,v;
+	double cost;
+	int next;
+}NODE;
+NODE node[maxn*maxn];
+struct circle{
+	point c;
+	double r;
+};
+circle c[maxn];
+int head[maxn];
+int cou;
+void init(){
+	cou = 0;
+	memset(head, -1, sizeof(head));
+}
+void addedge(int u,int v,double cost){
+	node[cou].u=u;
+	node[cou].v = v;
+	node[cou].cost=cost;
+	node[cou].next=head[u];
+	head[u]=cou++;
+}
+point l2l_inst_p(point u1,point u2,point v1,point v2){
+	point ans = u1;
+	double t = ((u1.x - v1.x)*(v1.y - v2.y) - (u1.y - v1.y)*(v1.x - v2.x))/
+	((u1.x - u2.x)*(v1.y - v2.y) - (u1.y - u2.y)*(v1.x - v2.x));
+	ans.x += (u2.x - u1.x)*t;
+	ans.y += (u2.y - u1.y)*t;
+	return ans;
+}
+void l2c_inst_p(point c,double r,point l1,point l2,point &amp;p1,point &amp;p2){//线段与圆的交点
+	point p = c;
+	double t;
+	p.x += l1.y - l2.y;
+	p.y += l2.x - l1.x;
+	p = l2l_inst_p(p,c,l1,l2);
+	t = sqrt(r*r - disp2p(p,c)*disp2p(p,c))/disp2p(l1,l2);
+	p1.x = p.x + (l2.x - l1.x)*t;
+	p1.y = p.y + (l2.y - l1.y)*t;
+	p2.x = p.x - (l2.x - l1.x)*t;
+	p2.y = p.y - (l2.y - l1.y)*t;
+}
+void c2c_inst_p(point c1,double r1,point c2,double r2,point &amp;p1,point &amp;p2){//求两圆的两个交点
+	point u,v;
+	double t;
+	t = (1 + (r1*r1 - r2*r2)/disp2p(c1,c2)/disp2p(c1,c2))/2;
+	u.x = c1.x + (c2.x - c1.x)*t;
+	u.y = c1.y + (c2.y - c1.y)*t;
+	v.x = u.x + c1.y - c2.y;
+	v.y = u.y - c1.x + c2.x;
+	l2c_inst_p(c1,r1,u,v,p1,p2);
+}
+bool c2c_tangent(point a,double r1,point b,double r2){
+	if( dd(disp2p(a,b),r1+r2) || dd(disp2p(a,b),fabs(r1-r2)) )
+	return true;
+	return false;
+}
+point c2c_tangent_p(point a,double r1,point b,double r2){//求两圆的唯一交点
+	point t;
+	if( dd(disp2p(a,b),r1 + r2)){
+		t.x = (r1*b.x + r2*a.x)/(r1 + r2);
+		t.y = (r1*b.y + r2*a.y)/(r1 + r2);
+		return t;
+	}
+	t.x = (r1*b.x - r2*a.x)/(r1 - r2);
+	t.y = (r1*b.y - r2*a.y)/(r1 - r2);
+	return t;
+}
+point g[maxn];
+bool vis[maxn][maxn];
+double crossProduct(point a,point b,point c)//向量 ac 在 ab 的方向 顺时针是正{
+	return (c.x - a.x)*(b.y - a.y) - (b.x - a.x)*(c.y - a.y);
+}
+double disp2l(point a,point l1,point l2){
+	return fabs( crossProduct(a,l1,l2) )/disp2p(l1,l2);
+}
+bool onSegment(point a, point b, point c){
+	if( dd(crossProduct(a,b,c),0.0) &amp;&amp; dyd(c.x,min(a.x,b.x)) &amp;&amp;
+	xyd(c.x,max(a.x,b.x)) &amp;&amp; dyd(c.y,min(a.y,b.y)) &amp;&amp; xyd(c.y,max(a.y,b.y)) )
+	return true;
+	return false;
+}
+bool cmp(point a, point b){
+	if( dd(a.x, b.x) )
+	return xy(a.y, b.y);
+	return xy(a.x, b.x);
+}
+point tp[maxn];
+bool check(int cnt, int n){//检查线段是否在包围圈里，即判断相邻俩点之间的线段是否被一个圆覆盖
+	FOR(i, 1, cnt){
+		point tt;
+		tt.x = (tp[i].x + tp[i-1].x)/2;
+		tt.y = (tp[i].y + tp[i-1].y)/2;
+		bool f = false;
+		FOR(k, 0, n)
+		if( xyd(disp2p(c[k].c, tt), c[k].r) ){
+			f = true;
+			break;
+		}
+		if( !f )
+		return false;
+	}
+	return true;
+}
+double SPFA_List(int s,int t,int n){
+	queue&lt;int&gt;que;
+	que.push(s);
+	double dist[maxn];
+	for(int i=0;i&lt;maxn;i++)dist[i]=inf;
+	bool vis[maxn];
+	memset(vis,false,sizeof vis);
+	vis[s]=1;
+	dist[s]=0;
+	while(!que.empty()){
+		int tmp=que.front();
+		que.pop();
+		vis[tmp]=0;
+		for(int i=head[tmp];i!=-1;i=node[i].next){
+			int v=node[i].v;
+			double cost=node[i].cost;
+			if(dist[v]&gt;dist[tmp]+cost){
+				dist[v]=dist[tmp]+cost;
+				if(!vis[v]){
+					vis[v]=1;
+					que.push(v);
+				}
+			}
+		}
+	}
+	if(dd(dist[t],inf))return -1;
+	return dist[t];
+}
+double solve(int n){
+
+	int l = 0;
+	int s = 0, t = n-1;
+	FOR(i, 0, n)
+	g[l++] = c[i].c;
+	FOR(i, 0, n){
+		FOR(k, i+1, n){
+			if( dy(disp2p(c[i].c, c[k].c), c[i].r + c[k].r)//两圆无交点
+			|| c[i].c == c[k].c )
+			continue;
+			if( c2c_tangent(c[i].c, c[i].r, c[k].c, c[k].r) ){//两圆一个交点
+				point tt = c2c_tangent_p(c[i].c, c[i].r, c[k].c, c[k].r);
+				g[l++] = tt;
+			continue;
+		}
+		point t1, t2;
+		c2c_inst_p(c[i].c, c[i].r, c[k].c, c[k].r, t1, t2);//两圆一个交点
+		g[l++] = t1;
+		g[l++] = t2;
+		}
+	}
+	memset(vis, false, sizeof(vis));
+	int tmp[maxn];
+	FOR(i, 0, n){//判断圆与圆的交点与其他点是否可达，包括原来的圆心
+		int cnt = 0;
+		FOR(k, 0, l)
+		if( xyd(disp2p(c[i].c, g[k]), c[i].r) )
+		tmp[cnt++] = k;
+		
+		FOR(k, 0, cnt)
+		FOR(j, k+1, cnt){
+			int x = tmp[k], y = tmp[j];
+			if( vis[x][y] ) continue;
+			double dis = disp2p(g[x], g[y]);
+			addedge(x, y, dis);
+			addedge(y, x, dis);
+			vis[x][y] = vis[y][x] = true;
+		}
+	}
+	FOR(i, 0, l)//两点是否可以直接到达
+	FOR(k, i+1, l){
+		if( vis[i][k] ) continue;
+		int cnt = 0;
+		tp[cnt++] = g[i];
+		tp[cnt++] = g[k];
+		FOR(j, 0, n)
+		if( xyd(disp2l(c[j].c, g[i], g[k]),c[j].r) ){//线段与圆是否有交
+			point t1, t2;
+			l2c_inst_p(c[j].c, c[j].r, g[i], g[k], t1, t2);//线段于圆的交点
+			if( onSegment(g[i], g[k], t1) )
+			tp[cnt++] = t1;
+			if( onSegment(g[i], g[k], t2) )
+			tp[cnt++] = t2;
+		}
+		sort(tp, tp+cnt, cmp);//对线段与圆所有交点进行排序
+		if( check(cnt, n) ){
+			addedge(i, k, disp2p(g[i], g[k]));
+			addedge(k, i, disp2p(g[k], g[i]));
+		}
+	}
+	return SPFA_List(s, t, l);
+}
+int main(){
+	int ncases, n, ind = 1;
+	scanf("%d", &amp;ncases);
+	while( ncases-- ){
+		scanf("%d", &amp;n);
+		init();
+		FOR(i, 0, n){
+			c[i].c.get();
+			scanf("%lf", &amp;c[i].r);
+		}
+		double ans = solve(n);
+		printf("Case %d: ",ind++);
+		if( ans &lt; -eps )
+			puts("No such path.");
+		else
+			printf("%.4lf\n", ans);
+	}
+	return 0;
+}
+</code></pre>
+
+      </article>
+      <hr>
+      <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a><a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a></div>
+      <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+    </div>
+    <div class="post-area post comment">
+      <!-- 多说评论框 start -->
+      
+      <div class="ds-thread" data-thread-key="/2012/09/02/hdu 4063 Aircraft 计算几何&最短路" data-title="hdu 4063 Aircraft 计算几何&最短路" data-url="blog.shinichr.me/2012/09/02/hdu%204063%20Aircraft%20%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95&%E6%9C%80%E7%9F%AD%E8%B7%AF/"></div>
+      
+      <!-- 多说评论框 end -->
+    </div>
+  </div>
+
+  <div id="content" class="col-sm-3">
+    <!-- <div id="myAffix" class="shadow-bottom-center hidden-xs" data-spy="affix" data-offset-top="0" data-offset-bottom="-20"> -->
+    <div id="myAffix" class="shadow-bottom-center hidden-xs" >
+      <div class="categories-list-header">
+        Content
+      </div>
+      <div class="content-text"></div>
+    </div>
+  </div>
+</div>
+    </div>
+
+    
+    <div id="top" data-toggle="tooltip" data-placement="left" title="回到顶部">
+      <a href="javascript:;">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+      </a>
+    </div>
+
+    <footer class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="mailto:shinichi285264595@gmail.com"><span class="glyphicon glyphicon-envelope"></span> shinichi285264595@gmail.com</a>
+        <span class="point"> · </span>
+        
+          
+          <a href="https://github.com/ShinichR">
+            <span class="icon">
+              <svg viewBox="0 0 16 16">
+                <path fill="#aaa" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            Github
+            <!-- <span>ShinichR</span> -->
+          </a>
+          
+          
+          <span class="point"> · </span>
+          <span><a href="/feed.xml">RSS</a></span>
+          <span class="point"> · </span>
+          <span>shinchr note</span>
+          <span class="point"> · </span>
+          <span>&copy; 2015 Gaohaoyang</span>
+          <span class="point"> · </span>
+          <span>Designed by <a href="https://github.com/Gaohaoyang">HyG</a></span>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hygblog"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+<!-- 在新窗口中打开 -->
+  <script type="text/javascript">
+    function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+    }
+    //每次在有DOM插入时触发
+    $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+    });
+  </script>
+  </body>
+</html>

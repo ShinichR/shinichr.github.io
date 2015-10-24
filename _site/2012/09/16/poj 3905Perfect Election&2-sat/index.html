@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>poj 3905Perfect Election&2-sat</title>
+	<meta name="description" content="题意：有n个候选人，m组要求，每组要求关系到候选人中的两个人,“+i +j”代表i和j中至少有一人被选中，“-i -j”代表i和j中至少有一人不被选中.“+i -j”代表i被选中和j不被选中这两个事件至少发生一个，“-i +j”代表i不被选中和j被选中这两个事件至少发生一个。问是否存在符合所有m项要求的方案存在。...">
+	
+	<link rel="canonical" href="/2012/09/16/poj%203905Perfect%20Election&2-sat/">
+	<link rel="alternate" type="application/rss+xml" title="ShinichR" href="/feed.xml" />
+	
+	<!-- <link rel="stylesheet" href="/css/main.css"> -->
+
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/fontawesome/4.2.0/css/font-awesome.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"> -->
+	
+
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	
+	<!-- <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="/static/js/index.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/railscasts.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai.min.css"> -->
+	<!-- <script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/languages/dos.min.js"></script> -->
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?b636473d6ffa17615f94e5db1459ea81";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+</head>
+
+ <!--  <body data-spy="scroll" data-target="#myAffix"> -->
+  <body>
+
+    <header>
+
+<!-- navbar -->
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">ShinichR</a>
+      <p class="navbar-text"></p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+
+        
+          <li>
+        
+          <a href="/"><span class="glyphicon glyphicon-th-large"></span> Blog</a></li>
+
+        
+          
+            
+              <li>
+            
+            <a href="/about/"><span class="glyphicon glyphicon-heart"></span> About</a></li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+
+    <div id="main" class="container main">
+      <div class="row">
+  <div id="myArticle" class="col-sm-9">
+    <div class="post-area post">
+      <header>
+        <h1>poj 3905Perfect Election&2-sat</h1>
+        <p>Sep 16, 2012</p>
+      </header>
+      <hr>
+      <article>
+        <p>题意：</p>
+
+<p>有n个候选人，m组要求，每组要求关系到候选人中的两个人,
+“+i +j”代表i和j中至少有一人
+被选中，“-i -j”代表i和j中至少有一人不被选中.
+“+i -j”代表i被选中和j不被选中这两个事件至少发生
+一个，“-i +j”代表i不被选中和j被选中这两个事件至少发生一个。
+问是否存在符合所有m项要求的方案存在。</p>
+
+<p>初看貌似2-sat问题，但问题是怎么建边呢，<strong>对于（+a,+b）建边-a-&gt;b表示选-a一定就要选+b，因为-a，+a只能选一个，而+a，+b必须选一个则选-a一定选+b，然后根据这种关系连边（连边a-&gt;b意义即是选a一定选b），对于点都加个nmax，保证不为负即可！</strong></p>
+
+<p>最后判断所有对点是否都不在一个强连通分量上<strong>（a，-a都在一个强连通分量上说明方案不可行），都不在说明有一组解满足所有对点只选一个出来且满足题上要求，输出1</strong>。</p>
+
+<h2 id="section">#</h2>
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+using namespace std;
+#define nMax 1005
+#define maxm 1100000
+struct EDGE{
+	int to;
+	int next;
+}edges[maxm*2];
+int n,atype,top;
+int dfn[nMax*2],low[nMax*2];
+int pos,dep;
+int in_sta[nMax*2],sta[nMax*2];
+int head[nMax*2];
+int belong[nMax*2];
+void addedge(int a,int b){
+	edges[pos].to=b;
+	edges[pos].next=head[a];
+	head[a]=pos++;
+}
+void init(){
+	atype=0;
+	pos=1;
+	dep=1;
+	top=0;
+	memset(dfn,0,sizeof dfn);
+	// memset(low,0,sizeof low);
+	memset(head,-1,sizeof head);
+	memset(in_sta,0,sizeof in_sta);
+	//memset(sta,0,sizeof sta);
+	//memset(belong,0,sizeof belong);
+	}
+void Tarjan(int u){
+	dfn[u]=low[u]=++dep;
+	sta[++top]=u;
+	in_sta[u]=1;
+	for(int e=head[u];e!=-1;e=edges[e].next){
+		int v=edges[e].to;
+		if(!dfn[v]){
+			Tarjan(v);
+			low[u]=min(low[u],low[v]);
+		}
+		else if(in_sta[v]){
+			low[u]=min(low[u],dfn[v]);
+		}
+	}
+	if(dfn[u]==low[u]){
+		atype++;
+		int s;
+		do{
+			s=sta[top--];
+			belong[s]=atype;
+			in_sta[s]=0;
+		}while(s!=u);
+	}
+}
+int judges(){
+	for(int i=1;i&lt;n;i++){
+		if(belong[nMax-i]==belong[nMax+i])return 0;
+	}
+	return 1;
+}
+int m;
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int a,b;
+		init();
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d",&amp;a,&amp;b);
+			addedge(nMax-a,nMax+b);
+			addedge(nMax-b,nMax+a);
+		}
+		for(int i=1;i&lt;n;i++){
+			if(!dfn[nMax-i])Tarjan(nMax-i);
+			if(!dfn[nMax+i])Tarjan(nMax+i);
+		}
+		printf("%d\n",judges());
+	}
+return 0;
+} ###
+</code></pre>
+
+
+      </article>
+      <hr>
+      <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a><a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a></div>
+      <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+    </div>
+    <div class="post-area post comment">
+      <!-- 多说评论框 start -->
+      
+      <div class="ds-thread" data-thread-key="/2012/09/16/poj 3905Perfect Election&2-sat" data-title="poj 3905Perfect Election&2-sat" data-url="blog.shinichr.me/2012/09/16/poj%203905Perfect%20Election&2-sat/"></div>
+      
+      <!-- 多说评论框 end -->
+    </div>
+  </div>
+
+  <div id="content" class="col-sm-3">
+    <!-- <div id="myAffix" class="shadow-bottom-center hidden-xs" data-spy="affix" data-offset-top="0" data-offset-bottom="-20"> -->
+    <div id="myAffix" class="shadow-bottom-center hidden-xs" >
+      <div class="categories-list-header">
+        Content
+      </div>
+      <div class="content-text"></div>
+    </div>
+  </div>
+</div>
+    </div>
+
+    
+    <div id="top" data-toggle="tooltip" data-placement="left" title="回到顶部">
+      <a href="javascript:;">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+      </a>
+    </div>
+
+    <footer class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="mailto:shinichi285264595@gmail.com"><span class="glyphicon glyphicon-envelope"></span> shinichi285264595@gmail.com</a>
+        <span class="point"> · </span>
+        
+          
+          <a href="https://github.com/ShinichR">
+            <span class="icon">
+              <svg viewBox="0 0 16 16">
+                <path fill="#aaa" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            Github
+            <!-- <span>ShinichR</span> -->
+          </a>
+          
+          
+          <span class="point"> · </span>
+          <span><a href="/feed.xml">RSS</a></span>
+          <span class="point"> · </span>
+          <span>shinchr note</span>
+          <span class="point"> · </span>
+          <span>&copy; 2015 Gaohaoyang</span>
+          <span class="point"> · </span>
+          <span>Designed by <a href="https://github.com/Gaohaoyang">HyG</a></span>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hygblog"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+<!-- 在新窗口中打开 -->
+  <script type="text/javascript">
+    function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+    }
+    //每次在有DOM插入时触发
+    $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+    });
+  </script>
+  </body>
+</html>

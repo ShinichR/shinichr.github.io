@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>图论基础专题</title>
+	<meta name="description" content="poj2186 Popular Cows题意即为有n头牛，m种关系。数据a，b表示a欣赏b，这种关系满足传递率，所以a-b,b-c可得a-c.题意要求被所有人欣赏的牛的个数（当然除了自己，也可能包括它。牛应该没那么自恋哈？ ）.边点太多，暴力肯定是不行的，想一下如果一个子图中k个牛都被子图的k-1个牛欣赏，可以把...">
+	
+	<link rel="canonical" href="/2012/11/16/%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80%E4%B8%93%E9%A2%98/">
+	<link rel="alternate" type="application/rss+xml" title="ShinichR" href="/feed.xml" />
+	
+	<!-- <link rel="stylesheet" href="/css/main.css"> -->
+
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/fontawesome/4.2.0/css/font-awesome.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"> -->
+	
+
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	
+	<!-- <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="/static/js/index.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/railscasts.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai.min.css"> -->
+	<!-- <script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/languages/dos.min.js"></script> -->
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?b636473d6ffa17615f94e5db1459ea81";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+</head>
+
+ <!--  <body data-spy="scroll" data-target="#myAffix"> -->
+  <body>
+
+    <header>
+
+<!-- navbar -->
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">ShinichR</a>
+      <p class="navbar-text"></p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+
+        
+          <li>
+        
+          <a href="/"><span class="glyphicon glyphicon-th-large"></span> Blog</a></li>
+
+        
+          
+            
+              <li>
+            
+            <a href="/about/"><span class="glyphicon glyphicon-heart"></span> About</a></li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+
+    <div id="main" class="container main">
+      <div class="row">
+  <div id="myArticle" class="col-sm-9">
+    <div class="post-area post">
+      <header>
+        <h1>图论基础专题</h1>
+        <p>Nov 16, 2012</p>
+      </header>
+      <hr>
+      <article>
+        <h3 id="poj2186-popular-cows">poj2186 Popular Cows</h3>
+
+<p>题意即为</p>
+
+<p>有n头牛，m种关系。数据a，b表示a欣赏b，这种关系满足传递率，所以a-b,b-c可得a-c.题意要求被所有人欣赏的牛的个数（当然除了自己，也可能包括它。牛应该没那么自恋哈？ ）.边点太多，暴力肯定是不行的，想一下如果一个子图中k个牛都被子图的k-1个牛欣赏，可以把这个子图何为一个点。这就是缩点。先进行tarjan求出所有强联通分量，记录每个分量的点数，进行缩点。最后对每个 缩点统计它的出度。对于每个scc若它的出度为0，则必然它是被别人欣赏，答案即为这个scc的点数，注意若有大于1个的出度为0的scc，则表示没有一头牛是被所有牛欣赏的，因为还有牛没有指向它。所以对于有1个以上的scc的答案为0；
+还有就是若有孤立scc（若只有一个scc则答案为n ），则答案也为0.很显然的</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+#include&lt;vector&gt;
+using namespace std;
+#define pb push_back
+const int maxn=11000;
+vector&lt;int&gt;vec[maxn];
+int dfn[maxn],instack[maxn],stack[maxn],belong[maxn],low[maxn];
+int in[maxn],out[maxn];
+int number[maxn];
+int stime,inn,scc,n,m;
+void init(){
+	stime=0,inn=0,scc=0;
+	for(int i=0;i&lt;maxn;i++)vec[i].clear();
+	memset(dfn,0,sizeof dfn);
+	memset(low,0,sizeof low);
+	memset(stack,0,sizeof stack);
+	memset(instack,0,sizeof instack);
+	memset(belong,0,sizeof belong);
+	memset(low,0,sizeof low);
+	memset(in,0,sizeof in);
+	memset(out,0,sizeof out);
+	memset(number,0,sizeof number);
+}
+void tarjan(int u){
+	printf("u=%d\n",u);
+	dfn[u]=low[u]=++stime;
+	instack[u]=1;
+	stack[++inn]=u;
+	for(int i=0;i&lt;vec[u].size();i++){
+		int v=vec[u][i];
+		if(!dfn[v]){
+			tarjan(v);
+			low[u]=min(low[u],low[v]);
+		}
+		else if(instack[v]){
+			low[u]=min(low[u],dfn[v]);
+		}
+	}
+	if(dfn[u]==low[u]){
+		++scc;
+		int j,num=0;
+		do{
+			j=stack[inn--];
+			belong[j]=scc;
+			num++;
+			instack[j]=0;
+		}while(j!=u);
+		number[scc]=num;
+	}
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int a,b;
+		init();
+		int vis[maxn];
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d",&amp;a,&amp;b);
+			vec[a].pb(b);
+			vis[a]=vis[b]=1;
+		}
+		bool flag=false;
+		for(int i=1;i&lt;=n;i++){
+			if(!dfn[i]){
+				tarjan(i);
+			}
+		}
+		for(int i=1;i&lt;=n;i++){
+			for(int j=0;j&lt;vec[i].size();j++){
+				int v=vec[i][j];
+				if(belong[i]!=belong[v]){//缩点的出度入读统计
+					in[belong[v]]++;
+					out[belong[i]]++;
+				}
+			}
+		}
+		int kk=0;
+		int ans=0;
+		for(int i=1;i&lt;=scc;i++){
+			if(out[i]==0&amp;&amp;in[i]==0)flag=true;
+			if(out[i]==0){
+				kk++;
+				ans+=number[i];
+			}
+		}
+		if(scc==1)flag=false;//只有一个scc答案为n
+		if(kk==1&amp;&amp;!flag)
+		printf("%d\n",ans);
+		else printf("0\n");
+	}
+	return 0;
+}
+</code></pre>
+
+<h3 id="poj2337-catenyms">poj2337 Catenyms</h3>
+
+<p>欧拉回路和欧拉路径的运用
+主要是判断建的图是否符合欧拉路径或欧拉回路   </p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+#include&lt;algorithm&gt;
+#define maxn 1010
+using namespace std;
+struct ROAD{
+int vis;
+char str[25];
+int u,v;
+}rr[maxn];
+int n;
+int vis[30];
+int in[30],out[30],father[30];
+bool cmp(ROAD a ,ROAD b){
+	return strcmp(a.str,b.str)&gt;0;
+}
+int find(int x){
+	return father[x]==x?x:father[x]=find(father[x]);
+}
+int start,end,cnt;
+int judge(){
+	int times=0;
+	for(int i=0;i&lt;26;i++){
+		int degree=in[i]-out[i];
+		if(abs(degree)&gt;1)return 0;//度大于1的无欧拉路
+		if(degree&gt;0)start=i;//度大于1的是起点
+		if(degree&lt;0)end=i;//终点
+		if(degree%2)times++;
+	}
+	if(times&gt;2)return 0;//度不为0的点大于2则无欧拉
+	int i,j;
+	for(i=0;i&lt;26;i++)if(vis[i])break;
+	int k=find(i);
+	for(j=k+1;j&lt;26;j++){//判联通//
+		if(!vis[j])continue;
+		if(k!=find(j))return 0;
+	}
+	if(times==0){
+		for(i=0;i&lt;26;i++)if(vis[i])break;
+		start=i;
+		return 1;
+	}
+	return 2;
+}
+int ans[maxn];
+void dfs(int u){//深搜
+
+	for(int i=n-1;i&gt;=0;i--){
+		if(!rr[i].vis&amp;&amp;rr[i].u==u){
+			rr[i].vis=1;
+			dfs(rr[i].v);
+			ans[cnt++]=i;//存路径
+		}
+	}
+}
+int main(){
+	int cas;
+	scanf("%d",&amp;cas);
+	while(cas--){
+		memset(in,0,sizeof in);
+		memset(out,0,sizeof out);
+		memset(vis,0,sizeof vis);
+		for(int i=0;i&lt;=26;i++)father[i]=i;
+		cnt=0;
+		scanf("%d",&amp;n);
+		for(int i=0;i&lt;n;i++){
+			scanf("%s",rr[i].str);
+		}
+		sort(rr,rr+n,cmp);
+		for(int i=0;i&lt;n;i++){//逆序这样先搜到的就是字典序顺序的边了
+			int a=rr[i].str[0]-'a';
+			int len=strlen(rr[i].str);
+			int b=rr[i].str[len-1]-'a';
+			rr[i].u=a,rr[i].v=b,rr[i].vis=0;
+			vis[a]=vis[b]=1;
+			in[a]++,out[b]++;
+			a=find(a);
+			b=find(b);
+			if(a!=b)father[a]=b;
+		}
+		int what=judge();
+		if(what==0) {printf("***\n");
+		continue;
+		}
+		
+		printf("start=%d,end=%d\n",start,end);
+		rr[0].vis=1;
+		printf("\ncnt=%d\n",cnt);
+		dfs(start);
+		printf("%s",rr[ans[cnt-1]].str);
+		for(int i=cnt-2;i&gt;=0;i--){
+			printf(".%s",rr[ans[i]].str);
+		}
+		printf("\n");
+	}
+}
+</code></pre>
+
+<h3 id="poj1985-cow-marathon">poj1985 Cow Marathon</h3>
+
+<p>求图中两个距离最长的 点的距离。距离最长则距离相隔越远越好，先从1开始dfs找出最远点et，从et再dfs一次，即使答案 。这当然是建立在无向图与节点1是联通的基础上。</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;cstring&gt;
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+using namespace std;
+#define pb push_back
+struct point{
+	int next,cost;
+}p;
+const int maxn=41000;
+vector&lt;point&gt;vec[maxn];
+int n,m,vis[maxn];
+int ans,et;
+void dfs(int u,int cost){
+	if(ans&lt;cost){
+	et=u;
+	ans=cost;
+	}
+	for(int i=0;i&lt;vec[u].size();i++){
+		int v=vec[u][i].next;
+		printf("v=%d\n",v);
+		if(!vis[v]){
+			vis[v]=1;
+			dfs(v,cost+vec[u][i].cost);
+		}
+	}
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int a,b,c;
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d%d %*c",&amp;a,&amp;b,&amp;c);
+			p.next=b,p.cost=c;
+			vec[a].pb(p);
+			p.next=a;
+			vec[b].pb(p);
+		}
+		ans=0;
+		memset(vis,0,sizeof vis);
+		dfs(1,0);
+		ans=0;
+		memset(vis,0,sizeof vis);
+		dfs(et,0);
+		printf("%d\n",ans);
+	}
+	return 0;
+}  
+</code></pre>
+
+<h3 id="poj3275-ranking-the-cows">poj3275 Ranking the Cows</h3>
+
+<p>题意:</p>
+
+<p>给出n头牛的m个关系,要求对所有牛进行排序，求最少还需要多少个关系，有a&gt;b,b&gt;c可推出a&gt;c，即可用floyd的思想求出所有牛的关系，最后无法推出的关系数sum即为最少需要知道的关系。有n头牛最多有n*(n-1)/2种关系total,所以 答案几位total-sum;
+floyd的邻接矩阵版必然超时，枚举中间点k的起点i和终点j，若 k与i，或k与j无边，则无法松弛。所以直接枚举k的所有起点和终点。最后松弛后再把j加在i的终点，i加在j的起点里。</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;cstring&gt;
+using namespace std;
+#define pb push_back
+const int maxn=1100;
+int maps[maxn][maxn];
+int n,m;
+vector&lt;int&gt;pre[maxn],out[maxn];
+void init(){
+	for(int i=0;i&lt;maxn;i++)
+	pre[i].clear(),out[i].clear();
+	memset(maps,0,sizeof maps);
+}
+int floyd(){
+	int ans=0;
+	for(int k=1;k&lt;=n;k++){
+		for(int i=0;i&lt;pre[k].size();i++){
+			int u=pre[k][i];
+			for(int j=0;j&lt;out[k].size();j++){
+				int v=out[k][j];
+				if(!maps[u][v]&amp;&amp;maps[u][k]&amp;&amp;maps[k][v]){
+					maps[u][v]=1;
+					pre[v].pb(u);
+					out[u].pb(v);
+				}
+			}
+		}
+	}
+	for(int i=1;i&lt;=n;i++){
+		for(int j=1;j&lt;=n;j++)
+		ans+=maps[i][j];
+	}
+	return n*(n-1)/2-ans;
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		init();
+		int a,b;
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d",&amp;a,&amp;b);
+			maps[a][b]=1;
+			pre[b].pb(a),out[a].pb(b);
+		}
+		printf("%d\n",floyd());
+	}
+}
+</code></pre>
+
+<h3 id="poj1945-power-hungry-cows">poj1945 Power Hungry Cows</h3>
+
+<p>对两个寄存器进行广搜，他们之间的组合有八种，中途状态判重即可   </p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+using namespace std;
+int hash[21000][200];
+int n,node[701000][3];
+int ans,head,tail;
+bool add_node(int a,int b,int step){
+	if(a==n||b==n)return true;
+	if(a&lt;b){//a保存为稍大的那个值 hash数组
+		int tmp=a;
+		a=b;b=tmp;
+	}
+	if(a==b||a&gt;=(n+100)||b&gt;=100)//100为估值,a，b太大则肯定不需要
+	return false;
+	if(!hash[a][b]){//是否存在这个状态
+		hash[a][b]=1;
+		++tail;
+		node[tail][0]=a;node[tail][1]=b;
+		node[tail][2]=step;
+	}
+	return false;
+}
+void bfs(){
+	head=tail=-1;
+	add_node(1,0,0);
+	while(head&lt;tail){
+		++head;
+		int a=node[head][0],b=node[head][1],step=node[head][2]+1;
+		if(add_node(a+a,b,step)||add_node(a+b,b,step)||add_node(b+b,b,step)||
+		add_node(a,a+a,step)||add_node(a,a+b,step)||add_node(a,b+b,step)||
+		add_node(a,a-b,step)||add_node(a-b,a,step)){
+			ans=step;
+			break;
+		}
+	}
+}
+int main(){
+	while(scanf("%d",&amp;n)!=EOF){
+		memset(hash,0,sizeof hash);
+		bfs();
+		printf("%d\n",ans);
+	}
+	return 0;
+} 
+</code></pre>
+
+<h3 id="poj3177-redundant-paths">poj3177 Redundant Paths</h3>
+
+<p>求给定图每两个点 u,v 有两条不同途径 ,一个边联通分量的每两个点都有&gt;=1的路径。所以先对屠进行tarjan求边联通分量，然后将每个边联通缩点，易知当一个缩点的度为1时，必然需要给他建边，所以统计度为1的缩点为sum，最后答案即为（sum+1）/2，即将每两个缩点进行连接。</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+#include&lt;vector&gt;
+using namespace std;
+#define pb push_back
+const int maxn=1100;
+int maps[maxn][maxn];
+vector&lt;int&gt;vec[maxn];
+int
+dfn[maxn],low[maxn];
+int spt,stime,rcc;
+void init(){
+	stime=0;
+	spt=0;
+	rcc=0;
+	memset(maps,0,sizeof maps);
+	memset(dfn,0,sizeof dfn);
+	memset(low,0,sizeof low);
+	for(int i=0;i&lt;maxn;i++)vec[i].clear();
+}
+int n,m;
+void tarjan(int u,int father){
+	dfn[u]=low[u]=++stime;
+	for(int i=0;i&lt;vec[u].size();i++){
+		int v=vec[u][i];
+		if(!dfn[v]){
+			tarjan(v,u);
+			low[u]=min(low[u],low[v]);
+		}
+		else if(v!=father){//树枝边
+			low[u]=min(dfn[v],low[u]);
+		}
+	}
+}
+void bridge(){
+	int cnt[maxn];
+	memset(cnt,0,sizeof cnt);
+	for(int i=1;i&lt;=n;i++){
+		for(int j=0;j&lt;vec[i].size();j++){
+			int v=vec[i][j];
+			if(low[v]!=low[i]){
+				cnt[low[i]]++;
+			}
+		}
+	}
+	int leaf=0;
+	for(int i=1;i&lt;=n;i++){
+		if(cnt[i]==1)leaf++;
+	}
+	printf("%d\n",(leaf+1)/2);
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int a,b;
+		init();
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d",&amp;a,&amp;b);
+			if(maps[a][b])continue;
+			maps[a][b]=maps[b][a]=1;
+			vec[a].pb(b);
+			vec[b].pb(a);
+		}
+		int count=0;
+		for(int i=1;i&lt;=n;i++){
+			if(!dfn[i]){
+				tarjan(i,-1);
+			}
+		}
+		bridge();
+	}
+	return 0;
+}
+</code></pre>
+
+<h3 id="poj2395-out-of-hay">poj2395 Out of Hay</h3>
+
+<p>求最小生成树中的最大边，注意有重边</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;cstring&gt;
+#include&lt;cmath&gt;
+using namespace std;
+const int maxn=2100;
+int inf=0x7fffffff;
+int n,m;
+int dis[maxn][maxn];
+int dist[maxn];
+int vis[maxn];
+void init(){
+	for(int i=0;i&lt;maxn;i++){
+		for(int j=0;j&lt;maxn;j++){
+			dis[i][j]=inf;
+		}
+	}
+	memset(vis,0,sizeof vis);
+}
+int prim(){
+	for(int i=1;i&lt;=n;i++){
+		dist[i]=dis[1][i];
+	}
+	int ans=0;
+	for(int i=1;i&lt;=n;i++){
+		int x=inf,tmp=inf;
+		for(int j=1;j&lt;=n;j++){
+			if(!vis[j]&amp;&amp;dist[j]&lt;tmp){
+				tmp=dist[j];
+				x=j;
+			}
+		}
+		ans=max(ans,tmp);
+		vis[x]=1;
+		for(int j=1;j&lt;=n;j++)
+		dist[j]=min(dist[j],dis[x][j]);
+	}
+	return ans;
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int a,b,c;
+		init();
+		for(int i=0;i&lt;m;i++){
+			scanf("%d%d%d",&amp;a,&amp;b,&amp;c);
+			dis[a][b]=dis[b][a]=min(dis[a][b],c);
+		}
+		printf("%d\n",prim());
+	}
+	return 0;
+}    ###poj1164 The Castle
+</code></pre>
+
+<p>建图好了，直接bfs即可</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;cstring&gt;
+#include&lt;iostream&gt;
+#include&lt;queue&gt;
+using namespace std;
+const int maxn=200;
+int maps[maxn][maxn];
+bool vis[maxn][maxn];
+int n,m;
+struct point{
+	int a,b;
+};
+int dir[4][2]={-1,0,0,1,1,0,0,-1};
+void init(){
+	for(int i=1;i&lt;maxn;i++)
+	for(int j=1;j&lt;maxn;j++)maps[i][j]=1;
+	memset(vis,0,sizeof vis);
+}
+int bfs(point st){
+	queue&lt;point&gt;que;
+	que.push(st);
+	vis[st.a][st.b]=1;
+	int siz=1;
+	while(!que.empty()){
+		point tmp=que.front();
+		que.pop();
+		for(int i=0;i&lt;4;i++){
+			point tt=tmp;
+			tt.a+=dir[i][0],tt.b+=dir[i][1];
+			if(!vis[tt.a][tt.b]&amp;&amp;maps[tt.a][tt.b]&amp;&amp;tt.a&gt;=1&amp;&amp;tt.a&lt;=n&amp;&amp;tt.b&gt;=1&amp;&amp;tt.b&lt;=m){
+				printf("%d,%d\n",tt.a,tt.b);
+				if(tt.a%2==0&amp;&amp;tt.b%2==0)siz++;
+				vis[tt.a][tt.b]=1;
+				que.push(tt);
+			}
+		}
+	}
+	return siz;
+}
+int main(){
+	while(scanf("%d%d",&amp;n,&amp;m)!=EOF){
+		int k;
+		init();
+		for(int i=1,j;i&lt;=n;i++){
+			for(j=1;j&lt;=m;j++){
+				scanf("%d",&amp;k);
+				printf("k=%d\n",k);
+				if(k&amp;8){
+					k-=8,maps[i*2+1][j*2]=0;
+				}
+				if(k&amp;4){
+					k-=4,maps[i*2][j*2+1]=0;
+				}
+				if(k&amp;2){
+					k-=2,maps[i*2-1][j*2]=0;
+				}
+				if(k){
+					maps[i*2][j*2-1]=0;
+				}
+				maps[i*2-1][j*2-1]=0,maps[i*2-1][j*2+1]=0,maps[i*2+1][j*2-1]=0;
+				maps[i*2+1][j*2+1]=0;
+				maps[i*2][j*2]=1;
+			}
+		}
+		int counts=0,mins=0;
+		n=2*n+1,m=2*m+1;
+		for(int i=1;i&lt;=n;i++){
+			for(int j=1;j&lt;=m;j++){
+				if(maps[i][j]&amp;&amp;!vis[i][j]){
+					point x;
+					x.a=i,x.b=j;
+					counts++;
+					mins=max(mins,bfs(x));
+				}
+			}
+		}
+		printf("%d\n%d\n",counts,mins);
+	}
+	return 0;
+}
+</code></pre>
+
+<h3 id="poj1308-is-it-a-tree">poj1308 Is It A Tree</h3>
+
+<p>判断给定图是否是一棵树，注意空树也是树即输入数据是0，0时
+还要判断图的子图所有点是否联通即可</p>
+
+<pre><code>#include&lt;cstdio&gt;
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;cstring&gt;
+using namespace std;
+#define maxn 11000
+#define pb push_back
+int indeg[maxn];
+int vis[maxn];
+vector&lt;int&gt;vec[maxn];
+void init(){
+	memset(indeg ,0,sizeof indeg);
+	memset(vis,0,sizeof vis);
+	for(int i=0;i&lt;maxn;i++)vec[i].clear();
+}
+int number;
+int findROOT(){
+	int w=0,pos=0;
+	for(int i=0;i&lt;maxn;i++){
+		if(vis[i]&amp;&amp;indeg[i]==0){
+			w++;
+			pos=i;
+		}
+		if(vis[i])number++;
+	}
+	if(w&gt;1)
+		return 0;
+	return pos;
+}
+bool flag;
+int num;
+void judge(int root){
+	num++;
+	for(int i=0;i&lt;vec[root].size();i++){
+		printf("root=%d,vis=%d,%d\n",root,vec[root][i],flag);
+		if(!flag)return ;
+		if(vis[vec[root][i]]){
+			flag=false;
+			return ;
+		}
+		vis[vec[root][i]]=1;
+		judge(vec[root][i]);
+	}
+}
+int main(){
+	int a,b;
+	int cas=0;
+	while(scanf("%d%d",&amp;a,&amp;b),a&gt;=0&amp;&amp;b&gt;=0){
+		if(a==0&amp;&amp;b==0){
+			printf("Case %d is a tree.\n",++cas);
+			continue;
+		}
+		number=0;
+		init();
+		indeg[b]++;
+		vec[a].pb(b);
+		vis[a]=1,vis[b]=1;
+		while(scanf("%d%d",&amp;a,&amp;b),a&amp;&amp;b){
+			indeg[b]++;
+			vec[a].pb(b);
+			vis[a]=1,vis[b]=1;
+		}
+		int root=findROOT();
+		if(root==0){
+			printf("Case %d is not a tree.\n",++cas);
+			continue;
+		}
+		memset(vis,0,sizeof vis);
+		flag=true,num=0;
+		judge(root);
+		if(num&lt;number)flag=false;
+		if(flag){
+			printf("Case %d is a tree.\n",++cas);
+		}
+		else{
+			printf("Case %d is not a tree.\n",++cas);
+		}
+	}
+	return 0;
+}
+</code></pre>
+
+
+      </article>
+      <hr>
+      <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a><a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a></div>
+      <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+    </div>
+    <div class="post-area post comment">
+      <!-- 多说评论框 start -->
+      
+      <div class="ds-thread" data-thread-key="/2012/11/16/图论基础专题" data-title="图论基础专题" data-url="blog.shinichr.me/2012/11/16/%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80%E4%B8%93%E9%A2%98/"></div>
+      
+      <!-- 多说评论框 end -->
+    </div>
+  </div>
+
+  <div id="content" class="col-sm-3">
+    <!-- <div id="myAffix" class="shadow-bottom-center hidden-xs" data-spy="affix" data-offset-top="0" data-offset-bottom="-20"> -->
+    <div id="myAffix" class="shadow-bottom-center hidden-xs" >
+      <div class="categories-list-header">
+        Content
+      </div>
+      <div class="content-text"></div>
+    </div>
+  </div>
+</div>
+    </div>
+
+    
+    <div id="top" data-toggle="tooltip" data-placement="left" title="回到顶部">
+      <a href="javascript:;">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+      </a>
+    </div>
+
+    <footer class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="mailto:shinichi285264595@gmail.com"><span class="glyphicon glyphicon-envelope"></span> shinichi285264595@gmail.com</a>
+        <span class="point"> · </span>
+        
+          
+          <a href="https://github.com/ShinichR">
+            <span class="icon">
+              <svg viewBox="0 0 16 16">
+                <path fill="#aaa" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            Github
+            <!-- <span>ShinichR</span> -->
+          </a>
+          
+          
+          <span class="point"> · </span>
+          <span><a href="/feed.xml">RSS</a></span>
+          <span class="point"> · </span>
+          <span>shinchr note</span>
+          <span class="point"> · </span>
+          <span>&copy; 2015 Gaohaoyang</span>
+          <span class="point"> · </span>
+          <span>Designed by <a href="https://github.com/Gaohaoyang">HyG</a></span>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hygblog"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+<!-- 在新窗口中打开 -->
+  <script type="text/javascript">
+    function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+    }
+    //每次在有DOM插入时触发
+    $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+    });
+  </script>
+  </body>
+</html>

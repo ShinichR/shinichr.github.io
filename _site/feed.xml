@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ShinichR</title>
+    <description>shinchr note</description>
+    <link>/</link>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 24 Oct 2015 07:23:47 -0700</pubDate>
+    <lastBuildDate>Sat, 24 Oct 2015 07:23:47 -0700</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>golang sync package 学习</title>
+        <description>&lt;h3 id=&quot;syncwaitgroup&quot;&gt;1: sync.WaitGroup&lt;/h3&gt;
+
+&lt;p&gt;sync.WaitGroup只有3个方法:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add()&lt;/li&gt;
+  &lt;li&gt;done()&lt;/li&gt;
+  &lt;li&gt;Wait()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其中Done()是Add(-1)的别名。简单的来说，使用Add()添加计数，Done()减掉一个计数，计数不为0, 阻塞Wait()的运行。
+package main&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import (
+	&quot;fmt&quot;
+	&quot;sync&quot;
+	&quot;time&quot;
+)
+
+func main() {
+	var wg sync.WaitGroup
+
+	for i := 0; i &amp;lt; 5; i = i + 1 {
+		wg.Add(1)
+		go func(n int) {
+			// defer wg.Done()
+			defer wg.Add(-1)
+			EchoNumber(n)
+		}(i)
+	}
+
+	wg.Wait()
+}
+
+func EchoNumber(i int) {
+	time.Sleep(3e9)
+	fmt.Println(i)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出结果：
+###
+	0
+	1
+	2
+	3
+	4
+###&lt;/p&gt;
+
+&lt;h3 id=&quot;synconce&quot;&gt;2: sync.Once&lt;/h3&gt;
+&lt;p&gt;Once是多线程开始之前先执行，并且仅执行一次的方法。可以考虑用来做一些初始化操作。对socket close可以使用Once来执行close操作，防止close多次&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;package main
+
+import (
+	&quot;fmt&quot;
+	&quot;sync&quot;
+	&quot;time&quot;
+)
+
+var counter int = 0
+
+func main() {
+	var once sync.Once
+	onceBody := func() {
+		time.Sleep(3e9)
+		fmt.Println(&quot;Only once&quot;)
+	}
+	done := make(chan bool)
+	for i := 0; i &amp;lt; 10; i++ {
+		j := i
+		go func(int) {
+			once.Do(onceBody)
+			fmt.Println(j)
+			done &amp;lt;- true
+		}(j)
+	}
+	for i := 0; i &amp;lt; 10; i++ {
+		&amp;lt;-done
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sat, 17 Oct 2015 00:00:00 -0700</pubDate>
+        <link>/2015/10/17/golang%20sync%20package%20%E5%AD%A6%E4%B9%A0/</link>
+        <guid isPermaLink="true">/2015/10/17/golang%20sync%20package%20%E5%AD%A6%E4%B9%A0/</guid>
+        
+        
+        <category>golang</category>
+        
+      </item>
+    
+      <item>
+        <title>内核proc文件创建和使用</title>
+        <description>&lt;h3 id=&quot;section&quot;&gt;内核接口&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;create_proc_entry(在/proc目录下创建一个文件 ，这种文件&lt;strong&gt;用户态&lt;/strong&gt;将&lt;strong&gt;不支持file接口读写&lt;/strong&gt;，只能用cat命令查看)&lt;/li&gt;
+  &lt;li&gt;copy_to_user(将内核空间的内容复制到用户空间)&lt;/li&gt;
+  &lt;li&gt;copy_from_user(将用户空间的内容复制到内核空间)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;1:初始化定义&lt;/h3&gt;
+&lt;p&gt;结合7628无线驱动，
+在rbus_main_dev.c文件中&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#define APCLIINFO &quot;apcli_info&quot;
+static struct proc_dir_entry * apcliproc_entry = NULL;
+char apcli_info[1024]={0};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;readwrite&quot;&gt;2:read和write接口定义&lt;/h3&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;#&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;static int ap_cli_read(struct file * file,char *data,size_t len,loff_t *off)
+{
+        if(*off &amp;gt; 0)
+                return 0;
+        if(copy_to_user(data,apcli_info,strlen(apcli_info)))
+                return -EFAULT;
+        *off += strlen(apcli_info);
+        return strlen(apcli_info);
+}
+
+static int ap_cli_write(struct file *file, const char *data,size_t len,loff_t *off)
+{
+		int info_len = sizeof(apcli_info);
+		memset(apcli_info,0,info_len);
+		if(len &amp;gt;= info_len)
+			len = info_len - 1;
+        if(copy_from_user(apcli_info,(void*)data,len))
+                return -EFAULT;
+        apcli_info[len]=&#39;\0&#39;;
+        return len;
+
+} ###
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;proc&quot;&gt;3: proc文件创建和文件操作接口绑定&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;static struct file_operations ap_cli_ops = {
+   .read =ap_cli_read,
+   .write = ap_cli_write,
+};//绑定该proc 文件的读写接口，上面已经实现
+
+
+apcliproc_entry = create_proc_entry(APCLIINFO,0666,NULL);
+if(!apcliproc_entry){
+        printk(KERN_ERR &quot;can&#39;t create /proc/apcli_info n&quot;);
+        return -EFAULT;
+}
+apcliproc_entry-&amp;gt;proc_fops = &amp;amp;ap_cli_ops;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意，如果内核是3.0以上，那么create_proc_entry接口将改为&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;proc_create apcliproc_entry = proc_create(APCLIINFO,0666,NULL,&amp;amp;ap_cli_ops);
+if(!apcliproc_entry){
+        printk(KERN_ERR &quot;can&#39;t create /proc/apcli_info n&quot;);
+        return -EFAULT;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上就实现了proc文件的创建和读写接口，最后只需要将连接结果保存到apcli_info 字符数组即可
+在cmm_info.c 的接口RTMPIoctlConnStatus中。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 12 Oct 2015 00:00:00 -0700</pubDate>
+        <link>/2015/10/12/%E5%86%85%E6%A0%B8proc%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/</link>
+        <guid isPermaLink="true">/2015/10/12/%E5%86%85%E6%A0%B8proc%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/</guid>
+        
+        
+        <category>kernel</category>
+        
+      </item>
+    
+      <item>
+        <title>MEPG2 初探</title>
+        <description>&lt;h3 id=&quot;mepg2&quot;&gt;首先介绍下MEPG2&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;MPEG&lt;/strong&gt;是活动图像专家组(Moving Picture Experts Group)的缩写,于1988年成立。目前MPEG已颁布了三个活动图像及声音编码的正式国际标准，分别称为&lt;strong&gt;MPEG-1、MPEG-2&lt;/strong&gt;和&lt;strong&gt;MPEG-4&lt;/strong&gt;，而&lt;strong&gt;MPEG-7&lt;/strong&gt;和&lt;strong&gt;MPEG-21&lt;/strong&gt;都在研究中。MEPG标准时运动图像专家组这些家伙制定的一系列利用数字压缩手段使运动图像压缩的国际标准。&lt;/p&gt;
+
+&lt;p&gt;在MPEG-2标准中，有两种不同类型的码流输出到信道：一种是&lt;strong&gt;节目码流(PS ，Program Stream)&lt;/strong&gt;,,适用于没有误差产生的信道传送，比如我们要说的DVB存储介质。另一种是&lt;strong&gt;传送流（TS Transport Stream）&lt;/strong&gt;适于有&lt;strong&gt;信道噪声产生的传输，适用于远距离传送&lt;/strong&gt;。这里我们议论的是&lt;strong&gt;TS&lt;/strong&gt;。.&lt;/p&gt;
+
+&lt;h3 id=&quot;ts&quot;&gt;TS结构&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/images/ts_header.png&quot; alt=&quot;ts header&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;包头包括&lt;strong&gt;*同步字节，1b传送包差错指示，1b的净荷单元起始指示，1b传送有限权，13b的包标示符PID，2b的传送加扰控制，2b调整字段控制盒 4b的连续计数器&lt;/strong&gt;。这里暂时不对这些作详细分析了&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/ts_pid.png&quot; alt=&quot;ts tid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/ts_tid.png&quot; alt=&quot;ts pid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;通过上面2张图我们可以得出这样一个结论，为了区分不同的表，必须要有标识符或者不同的结构&lt;/p&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;解析&lt;/h3&gt;
+&lt;p&gt;对于PAT,PMT等表来说，区分它们的方式自然是它们自身自身的&lt;strong&gt;table_id 和TS头的PID&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;为什么要多一个table_id 呢？ 因为当PID为0x0011时，它可以表示&lt;strong&gt;SDT，BAT&lt;/strong&gt;等多种表，所以加了一个&lt;strong&gt;table_id 作为一个二级目录&lt;/strong&gt;。所以根据PAT的table_id 为0x00 和 PID为0x00进行Demux就可以得到PAT。&lt;/p&gt;
+
+&lt;p&gt;但是仔细一看，发现PMT没有指定PID，那怎么找呢？通过&lt;strong&gt;PAT，PAT是节目关联表&lt;/strong&gt;，它有相应的PMT的信息&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/ts_pmt.png&quot; alt=&quot;ts pmt&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;PAT的结构中当&lt;strong&gt;program_number 不为0&lt;/strong&gt;时,就可以得到&lt;strong&gt;program_map_PID,这就是PMT的PID&lt;/strong&gt;。显然PMT不止一个。得到了PMT的PID和已知的table_id 得到PMT已水到渠成.相应的&lt;strong&gt;NIT,CAT都有固定的PID和table_id&lt;/strong&gt;,用相同的方法就可以找到。&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 16 Apr 2014 00:00:00 -0700</pubDate>
+        <link>/2014/04/16/MEPG2%20%E5%88%9D%E6%8E%A2(PSI%EF%BC%8CSI%E7%9A%84%E8%A7%A3%E6%9E%90)/</link>
+        <guid isPermaLink="true">/2014/04/16/MEPG2%20%E5%88%9D%E6%8E%A2(PSI%EF%BC%8CSI%E7%9A%84%E8%A7%A3%E6%9E%90)/</guid>
+        
+        
+        <category>mepg2</category>
+        
+      </item>
+    
+      <item>
+        <title>hdu 4196 Remoteland</title>
+        <description>&lt;p&gt;a题意即为:给一个n，求用不大与n的数组成一个最大的完全平方数&lt;/p&gt;
+
+&lt;p&gt;我们知道任意一个大于1的数n都可以分解为p1^k1*p2^k2…pi为n的素因子,ki即为相应的素因子个数。一个数要是完全平方数，它的每个素因子个数都要为偶数。至此思路为求n!这个数的所有素因子及个素,若素因子m个数为奇数,则减少一个，偶数就全要.但数据太大.&lt;/p&gt;
+
+&lt;p&gt;考虑把n!除掉那些奇数个因子的乘积，即求a=c/b，由于是取模的，直接除必然不行&lt;/p&gt;
+
+&lt;p&gt;c%mod=(a%mod)&lt;em&gt;(b%mod) 令A=a%mod，B=b%mod,C=c%mod;
+A=a%mod=(a&lt;/em&gt;1)%mod=(a%mod)&lt;em&gt;1%mod=(a%mod)&lt;/em&gt;b^(mod-1)%mod(费马小定理,下面有证明)
+=(a&lt;em&gt;b%mod)&lt;/em&gt;(b^(mod-2))%mod = (c%mod)&lt;em&gt;(b%mod)^(mod-2)%mod=C&lt;/em&gt;B^(mod-2)&lt;/p&gt;
+
+&lt;p&gt;利用上面的,先打素数表,从每个素数表枚举,分解n!的之质因子个数,若为奇数,就存入&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+#include&amp;lt;cstring&amp;gt;
+#include&amp;lt;cmath&amp;gt;
+                                                                 
+using namespace std;
+                                                                 
+#define N 10000000
+#define MOD 1000000007
+#define ll long long
+                                                                 
+bool flag[N+5]={0};
+ll fac[N+5];
+int prime[1000000],cnt=0;
+                                                                 
+void Prime(){
+    for(int i=2;i&amp;lt;sqrt(N+1.0);i++){
+        if(flag[i])continue;
+        for(int j=2;j*i&amp;lt;=N;j++){
+            flag[j*i]=true;
+        }
+                                                                 
+    }
+    for(int i=2;i&amp;lt;=N;i++){
+       if(!flag[i])prime[cnt++]=i;
+    }
+                                                                 
+}
+                                                                 
+ll pows(ll a,ll b){
+    ll ans=1;
+    while(b){
+        if(b&amp;amp;1)
+            ans=(ans*a)%MOD;
+        a=(a*a)%MOD;
+        b&amp;gt;&amp;gt;=1;
+    }
+    return ans;
+                                                                 
+}
+                                                                 
+int getsum(int n,int pri){
+    int ans=0;
+    while(n){
+        ans+=n/pri;
+        n=n/pri;
+    }
+    return ans;
+}
+                                                                 
+void getfac(){
+    fac[1]=1;
+    for(int i=2;i&amp;lt;=N;i++){
+        fac[i]=(fac[i-1]*i)%MOD;
+    }
+}
+                                                                 
+int main(){
+    Prime();
+    getfac();
+    int n;
+    while(scanf(&quot;%d&quot;,&amp;amp;n),n){
+            ll ret=1;
+            for(int i=0;i&amp;lt;cnt&amp;amp;&amp;amp;prime[i]&amp;lt;=n;i++){
+            int  c = getsum(n,prime[i]);
+            if(c&amp;amp;1)ret=(ret*prime[i])%MOD;
+        }
+      //  printf(&quot;ret=%d\n&quot;,ret);
+        printf(&quot;%I64d\n&quot;,(fac[n]*pows(ret,MOD-2))%MOD);
+    }
+                                                                 
+                                                                 
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;n!分解质因子:
+N! = p1^k1&lt;em&gt;p2^k2&lt;/em&gt;…
+把N!分成两部分，即奇偶两部分
+假设N是偶数
+N！=1&lt;em&gt;2&lt;/em&gt;3&lt;em&gt;4&lt;/em&gt;5……N=(2&lt;em&gt;4&lt;/em&gt;6……) * (1&lt;em&gt;3&lt;/em&gt;5……)
+因为有N/2个偶数，所以偶数部分可以提出N/2个2，
+=2^(N/2) * (1&lt;em&gt;2&lt;/em&gt;3&lt;em&gt;……N/2) * (1&lt;/em&gt;3&lt;em&gt;5&lt;/em&gt;……)
+=2^(N/2) * (N/2)! * (1&lt;em&gt;3&lt;/em&gt;5*……)&lt;/p&gt;
+
+&lt;p&gt;对比等式左右,N规模的问题可以转化成N/2的问题。上面假设了N是偶数，当然N是奇数时也是一样的
+于是有递推公式 f(n,2) = f(n/2,2) + n/2，f()表示n!中2的个数。
+用同样的方法可以推出 f(n,p) = f(n/p) + n/p，表示n!中素数p的个数。&lt;/p&gt;
+
+&lt;p&gt;费马小定理证明：&lt;/p&gt;
+
+&lt;p&gt;1)   假设p是素数,并且a是任意整数且a!≡0(mod p),则数
+    a,2a,3a…..(p-1)a （mod p） 与数列
+   1,2,3…(p-1) （mod p）相同，当然次序不保证相同
+   证明: a,2a,3a…这p-1个数不被p整除，假设有ja≡ka(mod p)
+肯定有p | (j-k)a ,又因 p不整除a，所以p | (j-k) 。
+1&amp;lt;j,k&amp;lt;p，j-k&amp;lt;p，纵观一下,能被p整除的只有0，所以j=k
+这表明 a,2a,3a…..(p-1)a （mod p）有p-1个不同的数,但（mod p）的结果只有p-1个，所以
+a,2a,3a…..(p-1)a （mod p） 与数列 1,2,3…(p-1) （mod p）相同，当然次序不保证相同&lt;/p&gt;
+
+&lt;p&gt;2） 由1）得 a&lt;em&gt;2a&lt;/em&gt;3a…&lt;em&gt;(p-1)a  ≡1&lt;/em&gt;2&lt;em&gt;3…(p-1) (mod p)
+a^(p-1)&lt;/em&gt;(p-1)!≡(p-1)! (mod p)
+得a^(p-1) ≡ 1(mod p)&lt;/p&gt;
+</description>
+        <pubDate>Thu, 07 Mar 2013 00:00:00 -0800</pubDate>
+        <link>/2013/03/07/hdu%204196%20Remoteland/</link>
+        <guid isPermaLink="true">/2013/03/07/hdu%204196%20Remoteland/</guid>
+        
+        
+        <category>数论</category>
+        
+      </item>
+    
+      <item>
+        <title>erlang进程环</title>
+        <description>&lt;p&gt;erlang进程环
+创建N个进程形成一个环,向环的i默认第一个发送与消息,消息循环M圈.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(ring).
+-export([start/3]).
+               
+start(Msg,N,M) -&amp;gt;
+    [
+        register(
+           get_atom(P,N),
+           spawn(
+               fun()-&amp;gt; precess(P,Msg,M,N) end)
+        ) || P &amp;lt;- lists:seq(1,N)
+    ],
+    p1!Msg.
+               
+get_atom(I,N) -&amp;gt;
+    list_to_atom(&quot;p&quot;++integer_to_list(I rem N)).
+               
+precess(_,_,0,_)-&amp;gt; void;
+precess(P,Msg,M,N)-&amp;gt;
+    receive
+       Msg -&amp;gt;
+           io:format(&quot;Process ~p received message !~n&quot;,[P]),
+               
+           catch get_atom(P+1,N)!Msg,
+           precess(P,Msg,M-1,N)
+    end.
+ 
+ring:start(&quot;hello&quot;,2,3).
+结果:
+Process 1 received message !
+&quot;hello&quot;
+Process 2 received message !
+Process 1 received message !
+Process 2 received message !
+Process 1 received message !
+Process 2 received message !
+
+分析:初始创建并注册N个进程,进程名为p1,p2...pn
+采用构造函数 P遍历（1，N）结合list_to_atom形成atom
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Mon, 04 Feb 2013 00:00:00 -0800</pubDate>
+        <link>/2013/02/04/erlang%E8%BF%9B%E7%A8%8B%E7%8E%AF/</link>
+        <guid isPermaLink="true">/2013/02/04/erlang%E8%BF%9B%E7%A8%8B%E7%8E%AF/</guid>
+        
+        
+        <category>erlang</category>
+        
+      </item>
+    
+      <item>
+        <title>erlang 进程</title>
+        <description>&lt;pre&gt;&lt;code&gt;-module(echo).
+-export([start/0,loop/1,print/1,stop/0]).
+          
+start() -&amp;gt;
+    register(echo,spawn(echo,loop,[0])).
+          
+loop(X) -&amp;gt;
+    receive
+       stop -&amp;gt;
+            io:format(&quot;echo has stoped!~n&quot;),
+            void;
+       Msg -&amp;gt;
+            io:format(&quot;echo received:~p~n&quot;,[Msg]),
+            loop(X)
+    end.
+          
+print(Msg)-&amp;gt;
+    echo ! Msg.
+          
+stop() -&amp;gt;
+    echo ! stop.
+
+
+c(echo).编译
+echo:start().注册echo进程
+echo:print(&quot;Hello&quot;). echo!Msg 向echo进程发送Msg消息  ,echo receive 匹配到消息，打印必递归接受消息,
+echo:stop(). 向echo发送stop消息,echo receive到stop结束进程.
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Mon, 04 Feb 2013 00:00:00 -0800</pubDate>
+        <link>/2013/02/04/erlang%20%E8%BF%9B%E7%A8%8B/</link>
+        <guid isPermaLink="true">/2013/02/04/erlang%20%E8%BF%9B%E7%A8%8B/</guid>
+        
+        
+        <category>erlang</category>
+        
+      </item>
+    
+      <item>
+        <title>Erlang 学习</title>
+        <description>&lt;p&gt;Erlang
+第一题:&lt;/p&gt;
+
+&lt;p&gt;求1i,2,…N的整数和以及求N-M的整数和
+1):   add:sum(N) .加了保护元 处理N小于0的情况
+2:):  add:betwn(4,5).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(add).
+-export([sum/1,sum/2,betwn/2]).
+% add 
+betwn(X,Y)-&amp;gt;
+   sum(Y)-sum(X)+X.
+sum(X) when X&amp;gt;0 -&amp;gt;
+   X+sum(X-1);
+sum(0) -&amp;gt; 0.
+sum(X,Y) -&amp;gt;
+   if X=&amp;lt;Y -&amp;gt;
+      betwn(X,Y);
+      X&amp;gt;Y -&amp;gt; io:format(&quot;X&amp;gt;Y,return error!&quot;)
+   end.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果betwn(N,M) N&amp;gt;M 输出”X&amp;gt;Y,return error!”&lt;/p&gt;
+
+&lt;p&gt;第二题:
+  打印1-N的所有奇数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(even).
+-export([even/1]).
+                                  
+% even
+                                  
+even(1) -&amp;gt;
+   io:format(&quot;Number:~p~n&quot;,[1]);
+even(N) when N &amp;gt;0 -&amp;gt;
+   case  N rem 2 of
+       1 -&amp;gt; io:format(&quot;Number:~p~n&quot;,[N]);
+       _ -&amp;gt; []
+   end,
+   even(N-1).
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用到了case 处理N rem 2即是n%2 的结果,若为1即为奇数,其它即忽略(通配符_).&lt;/p&gt;
+
+&lt;p&gt;第三题:
+生成一个[1,2,3,…n]的列表和[n,…3,2,1]的列表&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(list_create).
+-export([create/1,reverse_create/1]).
+                 
+create(N) -&amp;gt; create([],N).
+                 
+create(L,0) -&amp;gt; L;
+create(L,N) -&amp;gt; create([N|L],N-1).
+                 
+reverse(L) -&amp;gt; reverse(L,[]).
+                 
+reverse([],L) -&amp;gt; L;
+reverse([H|T],L) -&amp;gt; reverse(T,[H|L]).
+                 
+reverse_create(N) -&amp;gt; reverse(create((N))).
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;erlang的构造函数，递归N-1，当为0时L即为列表&lt;/p&gt;
+
+&lt;p&gt;第四题:
+在所给列表L中生成前N个L元素的列表&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(filter).
+-export([filter/2]).
+     
+% filter
+     
+filter(L,N) -&amp;gt;
+   filter(L,N,[]).
+     
+filter([],_,A) -&amp;gt; reverse(A,[]);
+filter(_,0,A) -&amp;gt; reverse(A,[]);
+filter([L|T],N,A) -&amp;gt;
+    case N &amp;gt; 0 of
+      true -&amp;gt; filter(T,N-1,[L|A]);
+      _ -&amp;gt; filter(T,0,A)
+    end.
+reverse([],L) -&amp;gt; L;
+reverse([A|T],L) -&amp;gt; reverse(T,[A|L]).
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sun, 03 Feb 2013 00:00:00 -0800</pubDate>
+        <link>/2013/02/03/Erlang%20%E5%AD%A6%E4%B9%A0/</link>
+        <guid isPermaLink="true">/2013/02/03/Erlang%20%E5%AD%A6%E4%B9%A0/</guid>
+        
+        
+        <category>erlang</category>
+        
+      </item>
+    
+      <item>
+        <title>Erlang 合并列表</title>
+        <description>&lt;p&gt;列表可为嵌套列表
+将一个列表的所有子列表合并为一个列表,并排序&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-module(together).
+-export([together/1]).
+   
+together(X)-&amp;gt;
+   together(X,[],length(X)).
+   
+together(_,L,0)-&amp;gt; qsort(L);
+together([X|Y],L,N)-&amp;gt; 
+       LL=together(X,L),
+       together(Y,LL,N-1).
+   
+together([],L) -&amp;gt;L;
+together([A|B],L) -&amp;gt; 
+       case erlang:is_list(A) of
+            true -&amp;gt;
+                LL=together(A,L),
+                together(B,LL);    
+            false -&amp;gt; together(B,[A|L])
+       end.
+          
+   
+qsort([]) -&amp;gt;[];
+qsort([H|T]) -&amp;gt; qsort(T,H,[],[]).
+   
+qsort([H|T],Z,L,R) when H&amp;gt;Z -&amp;gt;
+   qsort(T,Z,L,[H|R]);
+qsort([H|T],Z,L,R) when H=&amp;lt;Z -&amp;gt;
+   qsort(T,Z,[H|L],R);
+qsort([],Z,L,R)-&amp;gt;
+   T1 = qsort(L),
+   T2 = qsort(R),
+   case erlang:is_list(Z) of
+      true -&amp;gt;  T1 ++ Z ++ T2;
+      false -&amp;gt; T1 ++ [Z] ++ T2
+   end.
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sun, 03 Feb 2013 00:00:00 -0800</pubDate>
+        <link>/2013/02/03/Erlang%20%E5%90%88%E5%B9%B6%E5%88%97%E8%A1%A8/</link>
+        <guid isPermaLink="true">/2013/02/03/Erlang%20%E5%90%88%E5%B9%B6%E5%88%97%E8%A1%A8/</guid>
+        
+        
+        <category>erlang</category>
+        
+      </item>
+    
+      <item>
+        <title>数论 扩展欧几里德 ploya定理 组合数学</title>
+        <description>&lt;p&gt;题意:给一个大于等于6的偶数，求出两个素数，a,b 满足 x=a+b；&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+#include&amp;lt;cmath&amp;gt;
+#include&amp;lt;cstring&amp;gt;
+using namespace std;
+#define maxn 1000000
+int prime[maxn];
+int over[maxn];
+int prime_number=0;
+void get_prime(){
+	memset(over,0,sizeof over);
+	over[0]=over[1]=1;
+	for(int i=2;i&amp;lt;maxn;i++){
+		if(!over[i])
+		for(int j=i+i;j&amp;lt;maxn;j+=i){
+			over[j]=1;
+		}
+	}
+	for(int i=2;i&amp;lt;maxn;i++){
+		if(!over[i])
+		prime[prime_number++]=i;
+	}
+}
+int main(){
+	get_prime();
+	int n;
+	while(scanf(&quot;%d&quot;,&amp;amp;n),n){
+		bool flag=false;
+		for(int i=0;i&amp;lt;=n/2;i++){
+		
+		if(n-prime[i]&amp;gt;=i&amp;amp;&amp;amp;!over[n-prime[i]]){
+		printf(&quot;%d = %d + %d\n&quot;,n,prime[i],n-prime[i]);
+		flag=true;
+		break;
+		}
+		}
+		//printf(&quot;sgsgeg\n&quot;);
+		if(!flag)printf(&quot;Goldbach&#39;s conjecture is wrong.\n&quot;);
+		}
+		// printf(&quot;number=%d\n&quot;,prime_number);
+	return 0;
+}   ##组合数学
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;给一串数字，要求将它排列成升序，每次可以交换两个数，交换一次的代价为两数之和。求代价最小.
+题解参考:http://www.cnblogs.com/mcflurry/archive/2012/06/21/2557798.html&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+#include&amp;lt;cstring&amp;gt;
+using namespace std;
+int n,a[110000];
+int nexts[110000];
+int mins = 110000,maxx=-1;
+void countsort(){
+	memset(nexts,0,sizeof nexts);
+	for(int i=1;i&amp;lt;=n;i++){
+		nexts[a[i]]=1;
+		if(a[i]&amp;lt;mins)mins=a[i];
+		if(a[i]&amp;gt;maxx)maxx=a[i];
+	}
+	for(int i=1;i&amp;lt;=maxx;i++)
+	nexts[i]+=nexts[i-1];
+}
+int vis[110000];
+int solve(){
+	int ans=0;
+	memset(vis,0,sizeof vis);
+	for(int i=1;i&amp;lt;=n;i++){
+		int len=0,temp=i,sum=0,tmin=110000;
+		while(!vis[temp]){
+			vis[temp]=1;
+			len++;
+			sum+=a[temp];
+			if(a[temp]&amp;lt;tmin)tmin=a[temp];
+			temp=nexts[a[temp]];
+		}
+		if(len&amp;gt;0){
+			int res1=sum+(len-2)*tmin,res2=sum+tmin+(len+1)*mins;
+			ans+=res1&amp;lt;res2?res1:res2;
+		}
+	}
+	return ans;
+}
+int main(){
+	while(scanf(&quot;%d&quot;,&amp;amp;n)!=EOF){
+		for(int i=1;i&amp;lt;=n;i++){
+			scanf(&quot;%d&quot;,&amp;amp;a[i]);
+		}
+		countsort();
+		printf(&quot;%d\n&quot;,solve());
+	}
+	return 0;
+}
+    此题即用扩展欧几里德原理解决不定方程 设过s步后两青蛙相遇，则必满足以下等式：
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(x+m&lt;em&gt;s)-(y+n&lt;/em&gt;s)=k*l(k=0,1,2….)
+令a=n-m，b=l，d=x-y&lt;/p&gt;
+
+&lt;p&gt;原式即为ax+by=d
+由欧几里德原理知ax+by | gcd(a,b)，
+gcd递归实现,通过t,p的赋值的到每个a’x+b’y=gcd(a’,b’)的解
+对于a’ = b, b’ = a % b 而言，求得 x, y使得 a’x + b’y = Gcd(a’, b’)
+由于b’ = a % b = a - a / b * b 可以得到:
+a’x + b’y = Gcd(a’, b’)—&amp;gt;bx + (a - a / b * b)y = Gcd(a’, b’) = Gcd(a, b) —&amp;gt;ay +b(x - a / b*y) = Gcd(a, b)
+代码如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+using namespace std;
+long long t,p,gcd;
+long long extends_gcd(long long a,long long b){
+	if(!b){
+		t=1;p=0;
+		gcd=a;
+	}
+	else{
+		extends_gcd(b,a%b);
+		long long tmp = t;
+		t = p;
+		p = tmp - a/b*p;
+		// printf(&quot;%lld,%lld,%lld,%lld\n&quot;,t,p,a,b);
+	}
+}
+int main(){
+	long long x,y,m,n,l;
+	long long a,b,d;
+	while(scanf(&quot;%lld%lld%lld%lld%lld&quot;,&amp;amp;x,&amp;amp;y,&amp;amp;m,&amp;amp;n,&amp;amp;l)!=EOF){
+		a = n-m;
+		b = l;
+		d = x - y;
+		extends_gcd(a,b);
+		if(d%gcd){
+			printf(&quot;Impossible\n&quot;);
+			continue;
+		}
+		b=b/gcd;
+		d=d/gcd;
+		long long v=d*t;
+		printf(&quot;%lld\n&quot;,(v%b+b)%b);
+	}
+	return 0;
+}   ##ploya定理:
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;题意转述：一串由n个珠子组成的项链，用c种颜色涂染，问能形成多少种不同项链。&lt;/p&gt;
+
+&lt;p&gt;1.旋转.
+考虑顺时针旋转i格的置换:
+循环个数为gcd(n,i)
+每个循环的长度为L=n/gcd(n,i)&lt;/p&gt;
+
+&lt;p&gt;2.翻转
+考虑对称轴
+&lt;em&gt;**n为奇数. 只有一种对称轴, 即轴穿过一个点. 有[n/2]个循环长度为2, 还有一个循环长度为1(被穿过的点), V=C([n/2], [m/2]).
+**&lt;/em&gt;n为偶数, 有两种翻转&lt;/p&gt;
+
+&lt;p&gt;轴每边n/2个点. 这样的置换有n/2个
+轴穿两点, 每边n/2-1个点. 这样的置换也有n/2+1个&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+#include&amp;lt;cmath&amp;gt;
+using namespace std;
+int n,m;
+int gcd(int a,int b){
+	return b==0?a:gcd(b,a%b);
+}
+int polya(int c,int n){
+	int sum=0;
+	for(int i=1;i&amp;lt;=n;i++){
+		sum+=pow(c,gcd(i,n));
+	}
+	if(n&amp;amp;1)sum+=n*pow(c,n/2+1);
+	else sum+=n/2*pow(c,n/2)+n/2*pow(c,n/2+1);
+	return sum/2/n;
+}
+int main(){
+	while(scanf(&quot;%d%d&quot;,&amp;amp;n,&amp;amp;m),n||m){
+		printf(&quot;%d\n&quot;,polya(n,m));
+	}
+	return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sat, 26 Jan 2013 00:00:00 -0800</pubDate>
+        <link>/2013/01/26/%E6%95%B0%E8%AE%BA%20%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%B7%20ploya%E5%AE%9A%E7%90%86%20%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6/</link>
+        <guid isPermaLink="true">/2013/01/26/%E6%95%B0%E8%AE%BA%20%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%B7%20ploya%E5%AE%9A%E7%90%86%20%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6/</guid>
+        
+        
+        <category>数论</category>
+        
+      </item>
+    
+      <item>
+        <title>CF Good Sequence&amp;DP</title>
+        <description>&lt;p&gt;题意:&lt;/p&gt;
+
+&lt;p&gt;即为求最长的一个序列,该序列任意相邻元素不互斥。&lt;/p&gt;
+
+&lt;p&gt;我的做法为把每个数的所有因子(除1)保存在对应的vec[i]
+dp[因子]表示当前以因子为终点的最长序列长度
+循环对每个数的因子dp[因子]++，找出最大max;再更新每个数的所有因子为max；
+最大即为ans&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;cstdio&amp;gt;
+#include&amp;lt;iostream&amp;gt;
+#include&amp;lt;vector&amp;gt;
+#include&amp;lt;cmath&amp;gt;
+#include&amp;lt;cstring&amp;gt;
+using namespace std;
+#define pb push_back
+int num[110000];
+int dp[110000];
+vector&amp;lt;int&amp;gt;vec[110000];
+void inits(int x,int idx){
+	if(x==1){
+		vec[idx].pb(1);
+		return ;
+	}
+	int lens = (int)sqrt(x);
+	for(int i=2;i&amp;lt;=lens;i++){
+		if (x % i == 0)
+		vec[idx].pb(i),vec[idx].pb(x/i);
+	}
+	if(lens * lens ==x)
+	vec[idx].pop_back();
+
+	vec[idx].pb(x);
+}
+int main(){
+	int n;
+	while(scanf(&quot;%d&quot;,&amp;amp;n)!=EOF){
+		for(int i=0;i&amp;lt;110000;i++)vec[i].clear();
+		for(int i=1;i&amp;lt;=n;i++){
+			scanf(&quot;%d&quot;,&amp;amp;num[i]);
+			inits(num[i],i);
+		}
+		memset(dp,0,sizeof dp);
+		for(int i=1;i&amp;lt;=n;i++){
+			int maxs = -1;
+			int len = vec[i].size();
+			for(int j=0;j&amp;lt;len;j++){
+				printf(&quot;%d &quot;,vec[i][j]);
+				dp[vec[i][j]]++;
+				maxs = max(maxs,dp[vec[i][j]]);
+			}
+			for(int j=0;j&amp;lt;len;j++){
+				dp[vec[i][j]] = maxs;
+			}
+		}
+		int ans = -1;
+		for(int j=1;j&amp;lt;=n;j++){
+			ans = max(ans,dp[num[j]]);
+		}
+		printf(&quot;%d\n&quot;,ans);
+	}
+	return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Sat, 26 Jan 2013 00:00:00 -0800</pubDate>
+        <link>/2013/01/26/CF%20Good%20Sequence&DP/</link>
+        <guid isPermaLink="true">/2013/01/26/CF%20Good%20Sequence&DP/</guid>
+        
+        
+        <category>dp</category>
+        
+      </item>
+    
+  </channel>
+</rss>

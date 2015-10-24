@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ShinichR</title>
+	<meta name="description" content="shinchr note">
+	
+	<link rel="canonical" href="/">
+	<link rel="alternate" type="application/rss+xml" title="ShinichR" href="/feed.xml" />
+	
+	<!-- <link rel="stylesheet" href="/css/main.css"> -->
+
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/fontawesome/4.2.0/css/font-awesome.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"> -->
+	
+
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+	
+	<!-- <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script> -->
+
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="/static/js/index.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai_sublime.min.css">
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/railscasts.min.css"> -->
+	<!-- <link rel="stylesheet" type="text/css" href="http://apps.bdimg.com/libs/highlight.js/8.4/styles/monokai.min.css"> -->
+	<!-- <script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/languages/dos.min.js"></script> -->
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/highlight.js/8.4/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?b636473d6ffa17615f94e5db1459ea81";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+</head>
+
+ <!--  <body data-spy="scroll" data-target="#myAffix"> -->
+  <body>
+
+    <header>
+
+<!-- navbar -->
+  <nav class="navbar navbar-inverse">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">ShinichR</a>
+      <p class="navbar-text"></p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+
+        
+          <li class="active">
+          
+          <a href="/"><span class="glyphicon glyphicon-th-large"></span> Blog</a></li>
+
+        
+          
+            
+              <li>
+            
+            <a href="/about/"><span class="glyphicon glyphicon-heart"></span> About</a></li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+</header>
+
+
+    <div id="main" class="container main">
+      <div id="index" class="row">
+  <div class="col-sm-9">
+    <div class="post-area">
+      <!-- small button -->
+     <!--  <p class="pull-right visible-xs">
+       <button>toggle</button>
+     </p> -->
+      <div class="post-list-header">
+        Posts
+      </div>
+      <div class="post-list-body">
+        
+        <div class="all-posts" post-cate="All">
+          
+            <a class="post-list-item" href="/2015/10/17/golang%20sync%20package%20%E5%AD%A6%E4%B9%A0/">
+              <h2>
+              golang sync package 学习
+              </h2>
+              <span class="">Oct 17, 2015</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2015/10/12/%E5%86%85%E6%A0%B8proc%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/">
+              <h2>
+              内核proc文件创建和使用
+              </h2>
+              <span class="">Oct 12, 2015</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2014/04/16/MEPG2%20%E5%88%9D%E6%8E%A2(PSI%EF%BC%8CSI%E7%9A%84%E8%A7%A3%E6%9E%90)/">
+              <h2>
+              MEPG2 初探
+              </h2>
+              <span class="">Apr 16, 2014</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/03/07/hdu%204196%20Remoteland/">
+              <h2>
+              hdu 4196 Remoteland
+              </h2>
+              <span class="">Mar 7, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/02/04/erlang%E8%BF%9B%E7%A8%8B%E7%8E%AF/">
+              <h2>
+              erlang进程环
+              </h2>
+              <span class="">Feb 4, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/02/04/erlang%20%E8%BF%9B%E7%A8%8B/">
+              <h2>
+              erlang 进程
+              </h2>
+              <span class="">Feb 4, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/02/03/Erlang%20%E5%AD%A6%E4%B9%A0/">
+              <h2>
+              Erlang 学习
+              </h2>
+              <span class="">Feb 3, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/02/03/Erlang%20%E5%90%88%E5%B9%B6%E5%88%97%E8%A1%A8/">
+              <h2>
+              Erlang 合并列表
+              </h2>
+              <span class="">Feb 3, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/01/26/%E6%95%B0%E8%AE%BA%20%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%B7%20ploya%E5%AE%9A%E7%90%86%20%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6/">
+              <h2>
+              数论 扩展欧几里德 ploya定理 组合数学
+              </h2>
+              <span class="">Jan 26, 2013</span>
+            </a>
+
+
+
+          
+            <a class="post-list-item" href="/2013/01/26/CF%20Good%20Sequence&DP/">
+              <h2>
+              CF Good Sequence&DP
+              </h2>
+              <span class="">Jan 26, 2013</span>
+            </a>
+
+
+
+          
+          <!-- 分页 -->
+      <div class="paginator">
+              
+              <!-- 分页代码 -->
+              
+
+        
+            
+              <span class="active">1</span>
+            
+        
+            
+              <a href="/page2">2</a>
+            
+        
+            
+              <a href="/page3">3</a>
+            
+        
+            
+              <a href="/page4">4</a>
+            
+        
+            
+              <a href="/page5">5</a>
+            
+        
+            
+              <a href="/page6">6</a>
+            
+        
+
+        
+            <a href="/page2">下一页</a>
+        
+              
+      </div>
+      
+
+
+        </div>
+        <!-- <div class="posts-in-categories"> -->
+        
+          <div post-cate="图论">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2012/11/16/%E5%9B%BE%E8%AE%BA%E5%9F%BA%E7%A1%80%E4%B8%93%E9%A2%98/" class="post-list-item">
+                    <h2>
+                    图论基础专题
+                    </h2>
+                    <span class="">Nov 16, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/11/16/CF%20%23149%20(Div.%202)Dispute/" class="post-list-item">
+                    <h2>
+                    CF #149 (Div. 2)Dispute
+                    </h2>
+                    <span class="">Nov 16, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/10/10/zoj%203630%20Information&tarjan/" class="post-list-item">
+                    <h2>
+                    zoj 3630 Information&tarjan
+                    </h2>
+                    <span class="">Oct 10, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/10/05/poj%20Honeymoon%20Hike&dfs&%E4%BA%8C%E5%88%86/" class="post-list-item">
+                    <h2>
+                    poj Honeymoon Hike&dfs&二分
+                    </h2>
+                    <span class="">Oct 5, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/29/poj%20Gopher%20II&%E4%BA%8C%E5%88%86%E5%8C%B9%E9%85%8D/" class="post-list-item">
+                    <h2>
+                    poj Gopher II&二分匹配
+                    </h2>
+                    <span class="">Sep 29, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/27/hdu%203120%20dolphin&%E6%9C%80%E7%9F%AD%E8%B7%AF&%E4%BA%8C%E5%88%86/" class="post-list-item">
+                    <h2>
+                    hdu 3120 dolphin&最短路&二分
+                    </h2>
+                    <span class="">Sep 27, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/23/2012%20ACMICPC%20Asia%20Regional%20Hangzhou%20Online%20Finding%20crosses%E6%90%9C%E7%B4%A2/" class="post-list-item">
+                    <h2>
+                    2012 ACM/ICPC Asia Regional Hangzhou Online Finding crosses搜索
+                    </h2>
+                    <span class="">Sep 23, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/22/The%2037th%20ACMICPC%20Asia%20Regional%20JinHua%20Site%20Online%20Contest-D/" class="post-list-item">
+                    <h2>
+                    The 37th ACM/ICPC Asia Regional JinHua Site Online Contest-D
+                    </h2>
+                    <span class="">Sep 22, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/21/hdu%20Columbus%E2%80%99s%20bargain&%E6%9C%80%E7%9F%AD%E8%B7%AF/" class="post-list-item">
+                    <h2>
+                    hdu Columbus’s bargain&最短路
+                    </h2>
+                    <span class="">Sep 21, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/17/POJ%202987%20Firing&%E6%9C%80%E5%A4%A7%E6%9D%83%E9%97%AD%E5%90%88%E5%9B%BE/" class="post-list-item">
+                    <h2>
+                    POJ 2987 Firing&最大权闭合图
+                    </h2>
+                    <span class="">Sep 17, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/16/poj%203905Perfect%20Election&2-sat/" class="post-list-item">
+                    <h2>
+                    poj 3905Perfect Election&2-sat
+                    </h2>
+                    <span class="">Sep 16, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/16/2012%20Chengdu%20Online%20Food&%E6%9C%80%E5%A4%A7%E6%B5%81/" class="post-list-item">
+                    <h2>
+                    2012 Chengdu Online Food&最大流
+                    </h2>
+                    <span class="">Sep 16, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/14/poj%20King&%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F/" class="post-list-item">
+                    <h2>
+                    poj King&差分约束
+                    </h2>
+                    <span class="">Sep 14, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/14/poj%20Jamie%20s%20Contact%20Groups&%E5%A4%9A%E9%87%8D%E5%8C%B9%E9%85%8D/" class="post-list-item">
+                    <h2>
+                    poj Jamie s Contact Groups&多重匹配
+                    </h2>
+                    <span class="">Sep 14, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/14/poj%20Integer%20Intervals&%E5%B7%AE%E5%88%86%E7%BA%A6%E6%9D%9F/" class="post-list-item">
+                    <h2>
+                    poj Integer Intervals&差分约束
+                    </h2>
+                    <span class="">Sep 14, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/14/poj%20Going%20from%20u%20to%20v%20or%20from%20v%20to%20u&%E5%BC%B1%E8%BF%9E%E9%80%9A%E5%9B%BE/" class="post-list-item">
+                    <h2>
+                    poj Going from u to v or from v to u&弱连通图
+                    </h2>
+                    <span class="">Sep 14, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/12/poj%20Tram&floyd/" class="post-list-item">
+                    <h2>
+                    poj Tram&floyd
+                    </h2>
+                    <span class="">Sep 12, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/12/poj%20Destroying%20The%20Graph%E6%9C%80%E5%B0%8F%E7%82%B9%E6%9D%83%E8%A6%86%E7%9B%96+%E6%9C%80%E5%B0%8F%E5%89%B2/" class="post-list-item">
+                    <h2>
+                    poj Destroying The Graph最小点权覆盖+最小割
+                    </h2>
+                    <span class="">Sep 12, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/12/poj%203469%20Dual%20Core%20CPU&%E6%9C%80%E5%B0%8F%E5%89%B2/" class="post-list-item">
+                    <h2>
+                    poj 3469 Dual Core CPU&最小割
+                    </h2>
+                    <span class="">Sep 12, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/12/poj%20106%20miles%20to%20Chicago&floyd/" class="post-list-item">
+                    <h2>
+                    poj 106 miles to Chicago&floyd
+                    </h2>
+                    <span class="">Sep 12, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/10/2012%20Tianjin%20Online%20Island%20Transport&%E7%BD%91%E7%BB%9C%E6%B5%81/" class="post-list-item">
+                    <h2>
+                    2012 Tianjin Online Island Transport&网络流
+                    </h2>
+                    <span class="">Sep 10, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/09/2012%20Tianjin%20Online%20travel&%E6%9A%B4%E6%90%9C&floyd/" class="post-list-item">
+                    <h2>
+                    2012 Tianjin Online travel&暴搜
+                    </h2>
+                    <span class="">Sep 9, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/09/2012%20Changchun%20Online%20USACO%20ORZ&%E6%90%9C%E7%B4%A2/" class="post-list-item">
+                    <h2>
+                    2012 Changchun Online USACO ORZ&搜索
+                    </h2>
+                    <span class="">Sep 9, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/08/2012%20ACMICPC%20Asia%20Regional%20Changchun%20Online%20Spy's%20Work&%E7%BA%A6%E6%9D%9F%E9%97%AE%E9%A2%98/" class="post-list-item">
+                    <h2>
+                    2012 ACM/ICPC Asia Regional Changchun Online Spy's Work&约束问题
+                    </h2>
+                    <span class="">Sep 8, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/07/POJ%202394%20Checking%20an%20Alibi%20spfa&%E6%9C%80%E7%9F%AD%E8%B7%AF/" class="post-list-item">
+                    <h2>
+                    POJ 2394 Checking an Alibi spfa&最短路
+                    </h2>
+                    <span class="">Sep 7, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/06/poj%20Road%20Construction&%E5%8F%8C%E8%81%94%E9%80%9A%E5%88%86%E9%87%8F/" class="post-list-item">
+                    <h2>
+                    poj Road Construction&双联通分量
+                    </h2>
+                    <span class="">Sep 6, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/06/poj%20Kindergarten&%E6%9C%80%E5%B0%8F%E7%8B%AC%E7%AB%8B%E9%9B%86/" class="post-list-item">
+                    <h2>
+                    poj Kindergarten&最小独立集
+                    </h2>
+                    <span class="">Sep 6, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/06/poj%202337Catenyms&%E6%AC%A7%E6%8B%89%E5%9B%9E%E8%B7%AF/" class="post-list-item">
+                    <h2>
+                    poj 2337Catenyms&欧拉回路
+                    </h2>
+                    <span class="">Sep 6, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/05/hdu%20Connections%20between%20cities&%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/" class="post-list-item">
+                    <h2>
+                    hdu Connections between cities&最近公共祖先
+                    </h2>
+                    <span class="">Sep 5, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/04/HDU%20Paint%20on%20a%20Wall%E6%90%9C%E7%B4%A2/" class="post-list-item">
+                    <h2>
+                    hdu 4016 dfs&剪枝
+                    </h2>
+                    <span class="">Sep 4, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/03/hdu%204016%20dfs&%E5%89%AA%E6%9E%9D/" class="post-list-item">
+                    <h2>
+                    hdu 4016 dfs&剪枝
+                    </h2>
+                    <span class="">Sep 3, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/03/.hdu%20Random%20Maze&%E6%9C%80%E5%B0%8F%E8%B4%B9%E7%94%A8%E6%B5%81/" class="post-list-item">
+                    <h2>
+                    hdu Random Maze&最小费用流
+                    </h2>
+                    <span class="">Sep 3, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/02/poj%20network%20of%20schools%20%E5%BC%BA%E8%81%94%E9%80%9A&%E7%BC%A9%E7%82%B9/" class="post-list-item">
+                    <h2>
+                    poj network of schools 强联通&缩点
+                    </h2>
+                    <span class="">Sep 2, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/02/hdu%204063%20Aircraft%20%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95&%E6%9C%80%E7%9F%AD%E8%B7%AF/" class="post-list-item">
+                    <h2>
+                    hdu 4063 Aircraft 计算几何&最短路
+                    </h2>
+                    <span class="">Sep 2, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/01/hdu%204009%20Transfer%20water%E6%9C%80%E5%B0%8F%E6%A0%91%E5%BD%A2%E5%9B%BE/" class="post-list-item">
+                    <h2>
+                    hdu 4009 Transfer water最小树形图
+                    </h2>
+                    <span class="">Sep 1, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/08/31/hdu-4004-The%20Frog's%20Games&%E4%BA%8C%E5%88%86/" class="post-list-item">
+                    <h2>
+                    hdu 4004 The Frog's Games&二分
+                    </h2>
+                    <span class="">Aug 31, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/08/31/The%20Unique%20MST%20%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91%E5%94%AF%E4%B8%80%E6%80%A7/" class="post-list-item">
+                    <h2>
+                    poj The Unique MST 最小生成树唯一性
+                    </h2>
+                    <span class="">Aug 31, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/08/31/Domino%20Effect%20%E6%9C%80%E7%9F%AD%E8%B7%AF/" class="post-list-item">
+                    <h2>
+                    poj Domino Effect 最短路
+                    </h2>
+                    <span class="">Aug 31, 2012</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="数据结构">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2012/11/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%93%E9%A2%98/" class="post-list-item">
+                    <h2>
+                    数据结构专题
+                    </h2>
+                    <span class="">Nov 22, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/10/05/zju%20Information%20Sharing&%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="post-list-item">
+                    <h2>
+                    zju Information Sharing&并查集
+                    </h2>
+                    <span class="">Oct 5, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/10/01/zju%20Information%20Sharing&%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="post-list-item">
+                    <h2>
+                    zju Information Sharing&并查集
+                    </h2>
+                    <span class="">Oct 1, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/25/poj%20A%20Simple%20Problem%20with%20Integers&%E7%BA%BF%E6%AE%B5%E6%A0%91/" class="post-list-item">
+                    <h2>
+                    poj A Simple Problem with Integers&线段树
+                    </h2>
+                    <span class="">Sep 25, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/21/hdu%20Minimal%20Ratio%20Tree&%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" class="post-list-item">
+                    <h2>
+                    hdu Minimal Ratio Tree&最小生成树
+                    </h2>
+                    <span class="">Sep 21, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/09/15/poj%20Quick%20answer&%E5%B9%B6%E6%9F%A5%E9%9B%86/" class="post-list-item">
+                    <h2>
+                    poj Quick answer&并查集
+                    </h2>
+                    <span class="">Sep 15, 2012</span>
+                  </a>
+                
+              
+                
+                  <a href="/2012/08/31/hdu%204006%20%E7%AC%ACK%E5%A4%A7%E6%95%B0/" class="post-list-item">
+                    <h2>
+                    hdu 4006 第K大数
+                    </h2>
+                    <span class="">Aug 31, 2012</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="dp">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2013/01/26/CF%20Good%20Sequence&DP/" class="post-list-item">
+                    <h2>
+                    CF Good Sequence&DP
+                    </h2>
+                    <span class="">Jan 26, 2013</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="数论">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2013/03/07/hdu%204196%20Remoteland/" class="post-list-item">
+                    <h2>
+                    hdu 4196 Remoteland
+                    </h2>
+                    <span class="">Mar 7, 2013</span>
+                  </a>
+                
+              
+                
+                  <a href="/2013/01/26/%E6%95%B0%E8%AE%BA%20%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%B7%20ploya%E5%AE%9A%E7%90%86%20%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6/" class="post-list-item">
+                    <h2>
+                    数论 扩展欧几里德 ploya定理 组合数学
+                    </h2>
+                    <span class="">Jan 26, 2013</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="erlang">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2013/02/04/erlang%E8%BF%9B%E7%A8%8B%E7%8E%AF/" class="post-list-item">
+                    <h2>
+                    erlang进程环
+                    </h2>
+                    <span class="">Feb 4, 2013</span>
+                  </a>
+                
+              
+                
+                  <a href="/2013/02/04/erlang%20%E8%BF%9B%E7%A8%8B/" class="post-list-item">
+                    <h2>
+                    erlang 进程
+                    </h2>
+                    <span class="">Feb 4, 2013</span>
+                  </a>
+                
+              
+                
+                  <a href="/2013/02/03/Erlang%20%E5%AD%A6%E4%B9%A0/" class="post-list-item">
+                    <h2>
+                    Erlang 学习
+                    </h2>
+                    <span class="">Feb 3, 2013</span>
+                  </a>
+                
+              
+                
+                  <a href="/2013/02/03/Erlang%20%E5%90%88%E5%B9%B6%E5%88%97%E8%A1%A8/" class="post-list-item">
+                    <h2>
+                    Erlang 合并列表
+                    </h2>
+                    <span class="">Feb 3, 2013</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="mepg2">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2014/04/16/MEPG2%20%E5%88%9D%E6%8E%A2(PSI%EF%BC%8CSI%E7%9A%84%E8%A7%A3%E6%9E%90)/" class="post-list-item">
+                    <h2>
+                    MEPG2 初探
+                    </h2>
+                    <span class="">Apr 16, 2014</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="kernel">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2015/10/12/%E5%86%85%E6%A0%B8proc%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E5%92%8C%E4%BD%BF%E7%94%A8/" class="post-list-item">
+                    <h2>
+                    内核proc文件创建和使用
+                    </h2>
+                    <span class="">Oct 12, 2015</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+          <div post-cate="golang">
+            
+              
+                
+              
+            
+              
+                
+                  <a href="/2015/10/17/golang%20sync%20package%20%E5%AD%A6%E4%B9%A0/" class="post-list-item">
+                    <h2>
+                    golang sync package 学习
+                    </h2>
+                    <span class="">Oct 17, 2015</span>
+                  </a>
+                
+              
+            
+          </div>
+        
+        
+        <!-- </div> -->
+      </div>
+      
+
+     
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="shadow-corner-curl hidden-xs">
+      <div class="categories-list-header">
+        Categories
+      </div>
+      
+      <a href="/index.html" class="categories-list-item" cate="All">
+        All<span class="my-badge"> 56</span>
+      </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="图论">
+          图论 <span class="my-badge">38</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="数据结构">
+          数据结构 <span class="my-badge">7</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="dp">
+          dp <span class="my-badge">1</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="数论">
+          数论 <span class="my-badge">2</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="erlang">
+          erlang <span class="my-badge">4</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="mepg2">
+          mepg2 <span class="my-badge">1</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="kernel">
+          kernel <span class="my-badge">1</span>
+        </a>
+      
+        <a href="javascript:;" class="categories-list-item" cate="golang">
+          golang <span class="my-badge">1</span>
+        </a>
+      
+    </div>
+  </div>
+</div>
+
+
+    </div>
+
+    
+    <div id="top" data-toggle="tooltip" data-placement="left" title="回到顶部">
+      <a href="javascript:;">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+      </a>
+    </div>
+
+    <footer class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <a href="mailto:shinichi285264595@gmail.com"><span class="glyphicon glyphicon-envelope"></span> shinichi285264595@gmail.com</a>
+        <span class="point"> · </span>
+        
+          
+          <a href="https://github.com/ShinichR">
+            <span class="icon">
+              <svg viewBox="0 0 16 16">
+                <path fill="#aaa" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            Github
+            <!-- <span>ShinichR</span> -->
+          </a>
+          
+          
+          <span class="point"> · </span>
+          <span><a href="/feed.xml">RSS</a></span>
+          <span class="point"> · </span>
+          <span>shinchr note</span>
+          <span class="point"> · </span>
+          <span>&copy; 2015 Gaohaoyang</span>
+          <span class="point"> · </span>
+          <span>Designed by <a href="https://github.com/Gaohaoyang">HyG</a></span>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"hygblog"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+<!-- 多说公共JS代码 end -->
+
+<!-- 在新窗口中打开 -->
+  <script type="text/javascript">
+    function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+    }
+    //每次在有DOM插入时触发
+    $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+    });
+  </script>
+  </body>
+</html>
