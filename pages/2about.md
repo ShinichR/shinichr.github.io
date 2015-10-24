@@ -16,7 +16,7 @@ icon: glyphicon-heart
 * email：[shinichi285264595@gmail.com](mailto:{{ site.email }})
 * QQ:    285264595
 * Weibo：[shinichr](http://weibo.com/shinichr)
-* Github: [shinichr]https://github.com/ShinichR
+* Github: [shinichr](https://github.com/ShinichR)
 ---
 
 ### 关于项目   
