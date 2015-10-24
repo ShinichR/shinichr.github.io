@@ -27,12 +27,7 @@ icon: glyphicon-heart
 
 ---
 
-#### 友情链接
-
-[skoo](http://skoo.me) \| [gaohaoyang](http://gaohaoyang.github.io/))
-
-Comment below to exchange link with me.  
 
 ---
 
-只要有空一定会更新的！
+idea is free！
