@@ -2,7 +2,7 @@
 layout: post
 title: "net_device 结构"
 description: "net_device 结构"
-category: "kernel"
+category: [kernel,driver]
 tags: []
 ---
 
