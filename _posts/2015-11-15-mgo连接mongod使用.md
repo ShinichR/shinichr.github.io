@@ -2,7 +2,7 @@
 layout: post
 title: "2015-11-15-mgo连接mongod使用"
 description: "2015-11-15-mgo连接mongod使用"
-categories: [mongo,nosql]
+categories: [mongodb,nosql]
 tags: []
 ---
 
