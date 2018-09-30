@@ -33,4 +33,4 @@ icon: glyphicon-heart
 
 ---
 
-idea is free！
+生活的点点滴滴都是人生韵味的积淀!
